@@ -1,297 +1,311 @@
-# Этап 13. Архитектура и Senior
+# Этап 13. Архитектура — Clean / Hexagonal / DDD, Outbox, Saga, финальный проект
 
-> 🎯 Проектировать системы, переживающие 5 команд и 3 рефакторинга.
-> ⏱ На всю жизнь.
-
-[← К оглавлению](README.md)
-
-## Содержание
-
-- [Урок 1. Гексагональная архитектура](#урок-1-гексагональная-архитектура)
-- [Урок 2. DDD основы](#урок-2-ddd-основы)
-- [Урок 3. Outbox и Saga](#урок-3-outbox-и-saga)
-- [Финальный проект](#финальный-проект)
+> ⏱ Время: 4 недели  
+> 🎯 Цель: проектировать приложения, которые не превращаются в "большой шар грязи" через год. Понимать DDD, гексагональную архитектуру, паттерны интеграции (Outbox, Saga), события и идемпотентность. Завершить курс реальным проектом.
 
 ---
 
-## Урок 1. Гексагональная архитектура
+## 📘 Урок 13.1 — Зачем нужна архитектура
 
-### Идея
+Симптомы плохой архитектуры:
+- Добавить фичу = править 15 файлов.
+- Тесты медленные, потому что трогают БД и HTTP.
+- Заменить Postgres на что-то другое — переписать половину.
+- Бизнес-логика размазана по контроллерам, моделям ORM и шаблонам.
 
-**Domain** не зависит ни от чего. **Infrastructure** реализует «порты» (Protocol'ы), определённые в domain. Между ними — **application** слой.
+Принципы, которые лечат это:
+- **Разделение ответственности** (SoC).
+- **Зависимость через интерфейсы** (DIP из SOLID).
+- **Бизнес-логика не знает о фреймворке**.
+
+---
+
+## 📘 Урок 13.2 — Гексагональная архитектура (Ports & Adapters)
 
 ```
-┌──── INTERFACES ────┐
-│ HTTP / CLI / Kafka │
-└──────────┬─────────┘
-           ▼
-┌──── APPLICATION ────┐
-│  use cases / cmds   │
-└──────────┬──────────┘
-           ▼
-┌────── DOMAIN ───────┐
-│ pure business logic │
-└──────────▲──────────┘
-           │ implements ports
-┌─── INFRASTRUCTURE ──┐
-│ SQLAlchemy / Redis  │
-└─────────────────────┘
+                  ┌──────────────────────────────┐
+       HTTP ────► │                              │
+       CLI  ────► │      DOMAIN (ядро)           │ ────► PostgresAdapter
+       Queue ───► │   - сущности, агрегаты       │ ────► RedisAdapter
+       Tests ──► │   - сервисы, use-cases       │ ────► SMTPAdapter
+                  │   - порты (интерфейсы)       │
+                  └──────────────────────────────┘
+                       не знает о фреймворке
 ```
 
-### Порты
+- **Domain** — pure Python: dataclasses, бизнес-правила. Никакого FastAPI/SQLAlchemy.
+- **Ports** — интерфейсы (Protocol), которые домен требует от внешнего мира.
+- **Adapters** — реализации портов: PostgresUserRepository, FastAPIController, ...
+- **Зависимости направлены внутрь**: домен ничего не импортирует из адаптеров.
+
+---
+
+## 📘 Урок 13.3 — Структура проекта
+
+```
+app/
+├── domain/          # ядро: сущности, value objects, события
+│   ├── user.py
+│   ├── order.py
+│   └── events.py
+├── application/     # use-cases (бизнес-операции)
+│   ├── create_order.py
+│   └── ports.py     # интерфейсы репозиториев и сервисов
+├── infrastructure/  # адаптеры
+│   ├── db/          # SQLAlchemy
+│   ├── http/        # внешние API клиенты
+│   └── queue/       # rabbitmq/kafka
+├── interfaces/      # вход: FastAPI controllers, CLI
+│   └── api/
+└── main.py          # composition root: связываем всё
+```
+
+---
+
+## 📘 Урок 13.4 — DDD: язык, агрегаты, события
+
+**Ubiquitous Language** — разработчики и бизнес говорят одними словами. `Order`, а не `OrderRow`.
+
+**Агрегат** = граница консистентности. Внутри агрегата всё меняется в одной транзакции, между агрегатами — через события.
 
 ```python
-# domain/ports.py
+# domain/order.py
+from dataclasses import dataclass, field
+from decimal import Decimal
+from uuid import UUID, uuid4
+
+@dataclass
+class OrderLine:
+    sku: str
+    qty: int
+    price: Decimal
+
+@dataclass
+class Order:
+    id: UUID = field(default_factory=uuid4)
+    customer_id: UUID
+    lines: list[OrderLine] = field(default_factory=list)
+    status: str = "draft"
+    events: list["DomainEvent"] = field(default_factory=list, repr=False)
+
+    def add(self, line: OrderLine) -> None:
+        if self.status != "draft":
+            raise ValueError("cannot modify confirmed order")
+        self.lines.append(line)
+
+    def confirm(self) -> None:
+        if not self.lines:
+            raise ValueError("empty order")
+        self.status = "confirmed"
+        self.events.append(OrderConfirmed(order_id=self.id))
+```
+
+---
+
+## 📘 Урок 13.5 — Use-case и порты
+
+```python
+# application/ports.py
 from typing import Protocol
+from uuid import UUID
+from app.domain.order import Order
 
-class UserRepository(Protocol):
-    def add(self, user: User) -> None: ...
-    def find_by_email(self, email: str) -> User | None: ...
+class OrderRepository(Protocol):
+    async def get(self, id_: UUID) -> Order | None: ...
+    async def save(self, order: Order) -> None: ...
 
-class EmailSender(Protocol):
-    def send(self, to: str, subject: str, body: str) -> None: ...
-```
+class EventPublisher(Protocol):
+    async def publish(self, event: object) -> None: ...
 
-### Use case
-
-```python
-# application/register_user.py
-class RegisterUser:
-    def __init__(self, users: UserRepository, mailer: EmailSender) -> None:
-        self.users = users
-        self.mailer = mailer
-
-    def __call__(self, email: str, password: str) -> User:
-        if self.users.find_by_email(email):
-            raise DuplicateError()
-        user = User.create(email=email, password=password)
-        self.users.add(user)
-        self.mailer.send(email, "Welcome!", "Hi!")
-        return user
-```
-
-`RegisterUser` тестируется **без БД и почты** — моки портов.
-
-### Структура
-
-```
-src/
-  domain/             # без зависимостей наружу
-    entities.py
-    value_objects.py
-    services.py
-    events.py
-  application/        # use cases
-    commands.py
-    queries.py
-    handlers.py
-  infrastructure/     # SQLAlchemy, Redis, Kafka
-    repositories.py
-    messaging.py
-  interfaces/         # FastAPI, CLI, gRPC
-    http/
-    cli/
-  config.py
-  main.py
-```
-
----
-
-## Урок 2. DDD основы
-
-### Value Object — immutable, identity-by-value
-
-```python
+# application/confirm_order.py
 from dataclasses import dataclass
 
-@dataclass(frozen=True)
-class Money:
-    amount: int      # в копейках
-    currency: str
-
-    def __add__(self, other: "Money") -> "Money":
-        if self.currency != other.currency:
-            raise ValueError("разные валюты")
-        return Money(self.amount + other.amount, self.currency)
-```
-
-### Entity — identity-by-id
-
-```python
 @dataclass
-class User:
-    id: int
-    email: str
+class ConfirmOrder:
+    orders: OrderRepository
+    publisher: EventPublisher
+
+    async def __call__(self, order_id: UUID) -> None:
+        order = await self.orders.get(order_id)
+        if order is None: raise LookupError("order not found")
+        order.confirm()
+        await self.orders.save(order)
+        for ev in order.events:
+            await self.publisher.publish(ev)
+        order.events.clear()
 ```
 
-Два `User(1, "a@b.c")` и `User(1, "x@y.z")` — один пользователь.
-
-### Aggregate — корень управляющий своими сущностями
-
-```python
-class Order:
-    def __init__(self, id: int, user_id: int):
-        self.id = id
-        self.user_id = user_id
-        self._items: list[OrderItem] = []
-
-    def add_item(self, product_id: int, qty: int, price: Money) -> None:
-        if qty <= 0:
-            raise ValueError("qty > 0")
-        self._items.append(OrderItem(product_id, qty, price))
-
-    @property
-    def total(self) -> Money:
-        return sum((i.line_total for i in self._items), Money(0, "USD"))
-```
-
-Доступ к `OrderItem` только через `Order` — инвариант агрегата.
-
-### Repository
-
-```python
-class OrderRepository(Protocol):
-    def get(self, id: int) -> Order | None: ...
-    def save(self, order: Order) -> None: ...
-```
+Use-case не знает ни про БД, ни про брокер. Тесты на use-case — без БД, моки порт через `InMemoryOrderRepository`.
 
 ---
 
-## Урок 3. Outbox и Saga
+## 📘 Урок 13.6 — Outbox: надёжная публикация событий
 
-### Проблема
+**Проблема:** записал в БД и упал — событие в Kafka не ушло. Записал в Kafka и упал — данные в БД не сохранены. **Двух-фазный коммит не работает в продакшне.**
 
-После создания заказа нужно: 1) положить в БД, 2) отправить событие в Kafka, 3) списать деньги. Если упадёт на (2) или (3) — рассинхрон.
-
-### Outbox-паттерн
-
-В **одной транзакции** пишем и сущность, и событие в outbox-таблицу:
-
-```python
-async with session.begin():
-    session.add(order)
-    session.add(OutboxEvent(
-        type="OrderCreated",
-        payload=order.to_dict(),
-    ))
-```
-
-Воркер читает outbox и публикует. При падении — перечитает.
-
-### Saga
-
-Распределённая транзакция через цепочку событий + компенсации:
+**Решение — Outbox:**
 
 ```
-[Создать заказ] → [Зарезервировать товар] → [Списать деньги]
-        │                  │                       │
-        │                  │           если упало:│
-        │                  │                       ▼
-        │             [Вернуть резерв] ← компенсация
-        ↓
-   [Отменить заказ] ← компенсация
+┌─ транзакция ──────────────────────────┐
+│  UPDATE orders SET status='confirmed' │
+│  INSERT INTO outbox(event)  ←         │
+└───────────────────────────────────────┘
+                  │
+                  ▼
+   ┌────── relay (отдельный процесс) ───────┐
+   │  SELECT * FROM outbox WHERE !sent      │
+   │  for each: publish → mark sent         │
+   └────────────────────────────────────────┘
 ```
 
-### Idempotency Key
-
-```python
-async def create_payment(idempotency_key: str, amount: int):
-    cached = await cache.get(f"idem:{idempotency_key}")
-    if cached:
-        return cached
-    payment = await db.create_payment(amount=amount)
-    await cache.set(f"idem:{idempotency_key}", payment, ttl=86400)
-    return payment
+```sql
+CREATE TABLE outbox (
+    id          BIGSERIAL PRIMARY KEY,
+    aggregate   TEXT NOT NULL,
+    type        TEXT NOT NULL,
+    payload     JSONB NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    sent_at     TIMESTAMPTZ
+);
+CREATE INDEX idx_outbox_unsent ON outbox(id) WHERE sent_at IS NULL;
 ```
 
-### ADR (Architecture Decision Record)
-
-```markdown
-# ADR-007: Переход с pandas на Polars
-Status: Accepted (2026-03-01)
-
-## Context
-pandas медленный на 10M+ строк, теряет память в ETL.
-
-## Decision
-Переходим на Polars 1.x для всех ETL-пайплайнов.
-
-## Consequences
-+ x10 быстрее, lazy execution
-+ Arrow-совместимость с DuckDB
-- Команда учит новый API
-- Часть legacy придётся переписать
-```
+Гарантирует **at-least-once** доставку. Получатель должен быть **идемпотентным** (см. 13.8).
 
 ---
 
-## Финальный проект. Модульный монолит «маркетплейс»
+## 📘 Урок 13.7 — Saga: распределённые транзакции
 
-### Bounded Contexts
+Когда операция захватывает несколько сервисов, классическая транзакция невозможна. Используют **сагу** — последовательность шагов с компенсациями.
 
-- **Users**: регистрация, профиль, аутентификация
-- **Catalog**: товары, категории, поиск
-- **Orders**: создание/оплата/доставка
-- **Payments**: интеграция с провайдером
+```
+Заказ:
+  1. Резерв товара     ── ошибка ──► (нечего откатывать)
+  2. Списать деньги    ── ошибка ──► отменить резерв
+  3. Создать доставку  ── ошибка ──► вернуть деньги, отменить резерв
+  4. Подтвердить заказ
+```
 
-### Архитектура
+Два стиля:
+- **Orchestration** — отдельный сервис-дирижёр шлёт команды.
+- **Choreography** — сервисы реагируют на события друг друга.
 
-- Гексагональная **внутри каждого модуля**.
-- Между модулями — только через **events** (in-memory или Kafka).
-- Outbox для надёжности.
+---
 
-### Стек
+## 📘 Урок 13.8 — Идемпотентность
 
-- FastAPI + uvicorn/granian
-- SQLAlchemy 2.x async + Alembic + Postgres
-- Redis для кеша
-- Kafka (или in-memory bus) для событий
-- OpenTelemetry + Jaeger
-- structlog
-- pytest + hypothesis + TestContainers
-- Docker + docker-compose
+Идемпотентная операция — повторный вызов с теми же параметрами не меняет результат.
+
+```python
+async def credit(account_id: UUID, amount: Decimal, idem_key: str) -> None:
+    async with session.begin():
+        if await session.scalar(select(IdempotencyKey).where(...)):
+            return                            # уже обработано
+        session.add(IdempotencyKey(key=idem_key))
+        await session.execute(update(Account).where(...).values(balance=Account.balance + amount))
+```
+
+Клиент шлёт уникальный `Idempotency-Key` в HTTP-заголовке (Stripe-style).
+
+---
+
+## 📘 Урок 13.9 — CQRS (когда нужно)
+
+**Command** меняет состояние, ничего не возвращает (или id).  
+**Query** читает, ничего не меняет.
+
+Иногда полезно держать **разные модели для записи и чтения** — write-модель оптимизирована под бизнес-правила, read-модель — под UI/отчёты. Не нужно сразу на все проекты, только когда чтение и запись по-разному масштабируются.
+
+---
+
+## 🛠 Финальный проект
+
+**Mini-Marketplace** — собери проект, использующий навыки всего курса.
 
 ### Требования
+1. **Backend** на FastAPI: пользователи, товары, заказы, корзина.
+2. **Auth** через JWT (этап 9).
+3. **БД** Postgres + SQLAlchemy 2.x async + Alembic (этап 10).
+4. **Архитектура**: domain / application / infrastructure / interfaces (этап 13).
+5. **События** через Outbox: при подтверждении заказа в outbox пишется `OrderConfirmed`, отдельный воркер шлёт в очередь (Redis Streams или RabbitMQ).
+6. **Idempotency-Key** на `POST /orders`.
+7. **Тесты**: unit (домен и use-cases) + integration (через TestClient) + property-based на критичную функцию (этап 7).
+8. **Структурные логи** + OpenTelemetry-трейсы (этап 12).
+9. **Docker** + docker-compose (этап 12).
+10. **CI**: ruff + pyright + pytest на каждом PR (этапы 0, 7, 12).
+11. **README** с архитектурной диаграммой, инструкцией по запуску, описанием эндпоинтов.
 
-- Каждый модуль: domain/, application/, infrastructure/, interfaces/.
-- Покрытие тестами ≥ 80%.
-- `pyright --strict` проходит.
-- README с архитектурной диаграммой.
-- 3+ ADR.
-- CI на GitHub Actions.
-
-### Бонус
-
-- Распилить на микросервисы (тот же код, разные деплои).
-- GraphQL gateway через strawberry.
-- Prometheus + Grafana dashboard.
-
----
-
-## Чеклист и ресурсы
-
-- [ ] Реализовал модульный монолит с разделёнными слоями
-- [ ] Написал 3+ ADR в проекте
-- [ ] Понимаю trade-off микросервисы vs модульный монолит
-- [ ] Использовал Saga / Outbox / Idempotency Key
-- [ ] Провёл 5+ чужих code review
-- [ ] Могу объяснить архитектуру новичку за 10 минут
-
-Ресурсы:
-- 📘 [«Cosmic Python»](https://www.cosmicpython.com/) — лучшая книга по архитектуре Python-приложений (free)
-- 📘 [Eric Evans — DDD Reference](https://www.domainlanguage.com/ddd/reference/) — free PDF
-- 📘 [Martin Fowler architecture](https://martinfowler.com/architecture/)
-- 📝 [microservices.io](https://microservices.io/)
-- 🎥 [ArjanCodes — Software Design](https://www.youtube.com/@ArjanCodes/playlists)
-- 📘 [ADR templates](https://github.com/joelparkerhenderson/architecture-decision-record)
-- 📘 [Designing Data-Intensive Applications](https://dataintensive.net/) — free chapters
-- 📘 [12-Factor App](https://12factor.net/)
-- 💬 [t.me/pythonl](https://t.me/pythonl) — разборы архитектур
+### Этапы реализации (4 недели)
+- **Неделя 1**: домен + use-cases + in-memory репозитории + unit-тесты.
+- **Неделя 2**: SQLAlchemy + Alembic + FastAPI-эндпоинты + integration-тесты.
+- **Неделя 3**: outbox + воркер + idempotency + JWT-auth.
+- **Неделя 4**: structlog + OTel + Docker + CI + README.
 
 ---
 
-🎉 **Если ты дошёл сюда — поздравляю, ты Middle+. Дальше — practice, practice, practice.**
+## ✅ Скелет проекта (фрагмент)
 
-⭐ Поставь звезду репозиторию и подпишись на [t.me/pythonl](https://t.me/pythonl) — там разбирают именно такие проекты.
+```python
+# app/main.py — composition root
+from fastapi import FastAPI
+from app.infrastructure.db import Session
+from app.infrastructure.db.order_repo import SqlOrderRepository
+from app.infrastructure.queue.outbox_publisher import OutboxPublisher
+from app.application.confirm_order import ConfirmOrder
+from app.interfaces.api.orders import make_router
 
-[← Этап 12](stage-12-devops.md) · [К оглавлению](README.md)
+def create_app() -> FastAPI:
+    app = FastAPI()
+    async def session_factory(): 
+        async with Session() as s: yield s
+    # композим зависимости в точке входа, нигде больше
+    app.include_router(make_router(
+        confirm_order=lambda s: ConfirmOrder(
+            orders=SqlOrderRepository(s),
+            publisher=OutboxPublisher(s),
+        )
+    ))
+    return app
+
+app = create_app()
+```
+
+---
+
+## 📚 Бесплатные ресурсы
+
+- 📕 [Architecture Patterns with Python — Cosmic Python (free online)](https://www.cosmicpython.com/) — главная книга про DDD/Hexagonal в Python.
+- 📕 [Domain-Driven Design Reference — Eric Evans (free PDF)](https://www.domainlanguage.com/ddd/reference/).
+- 📕 [Microservices.io — Chris Richardson](https://microservices.io/patterns/) — Outbox, Saga, CQRS.
+- 📕 [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) — каталог паттернов.
+- 📺 [Code Opinion (Derek Comartin)](https://www.youtube.com/@CodeOpinion) — современная архитектура.
+- 📺 [GOTO Conferences — DDD talks](https://www.youtube.com/@GOTOConferences).
+- 💬 **Telegram: [@pythonl](https://t.me/pythonl)**.
+
+---
+
+## ☑ Чеклист этапа
+
+- [ ] Разделяю код на domain / application / infrastructure / interfaces.
+- [ ] Домен не импортирует фреймворк и ORM.
+- [ ] Use-cases получают зависимости через порты (Protocol).
+- [ ] Понимаю, что такое агрегат и граница консистентности.
+- [ ] Реализовал Outbox для надёжной публикации событий.
+- [ ] Сделал `Idempotency-Key` на критичных эндпоинтах.
+- [ ] Финальный проект задеплоен и работает.
+
+---
+
+# 🎉 Поздравляю!
+
+Если ты дошёл до конца — у тебя есть **полный набор**, чтобы устроиться Python-разработчиком в 2026 году, делать pet-проекты, контрибьютить в open source и постоянно расти.
+
+**Что дальше:**
+- 🧠 Делай свои pet-проекты и публикуй на GitHub.
+- 📝 Веди технический блог — лучший способ закрепить знания.
+- 🌍 Контрибьють в open source (FastAPI, Polars, SQLAlchemy всегда нуждаются в помощи).
+- 💼 Иди на собеседования. Большинство компаний оценивают как раз то, что в этом курсе.
+
+---
+
+[⬅ Этап 12](stage-12-devops.md) | [📚 Оглавление](README.md) | [🏠 Главная README](../README.md)
