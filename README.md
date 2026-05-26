@@ -2272,6 +2272,8 @@ Review  → «объясни этот патч построчно, найди б
 ### 📚 Ресурсы
 
 - 🎓 **Полный урок в курсе:** [course/stage-15-parsing.md](course/stage-15-parsing.md) — 15 уроков, 7 упражнений, антибот, прокси, Scrapy + Crawlee, LLM-парсинг.
+- 🛡 **Глубоко про антибот:** [course/stage-15-antibot.md](course/stage-15-antibot.md) — 7 уровней детекта, TLS/JA3, stealth, behavioral.
+- 📦 **Готовый стартер:** [templates/scraper-starter](templates/scraper-starter/) — production-ready асинхронный скрапер с Docker и CI.
 - 📕 [httpx docs](https://www.python-httpx.org), [Playwright Python](https://playwright.dev/python/), [Scrapy docs](https://docs.scrapy.org).
 - 📕 [Apify Academy](https://docs.apify.com/academy) — бесплатные курсы по скрапингу.
 - 📕 [crawl4ai](https://github.com/unclecode/crawl4ai), [firecrawl](https://github.com/mendableai/firecrawl) — LLM-friendly парсеры.
