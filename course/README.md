@@ -35,6 +35,7 @@
 | 11 | Data / ML / AI | [stage-11-data-ml.md](stage-11-data-ml.md) |
 | 12 | DevOps и продакшн | [stage-12-devops.md](stage-12-devops.md) |
 | 13 | Архитектура и Senior | [stage-13-architecture.md](stage-13-architecture.md) |
+| 14 | 🤖 Вайбкодинг (AI-assisted dev) | [stage-14-vibecoding.md](stage-14-vibecoding.md) |
 
 ## 📐 Структура каждого этапа
 
