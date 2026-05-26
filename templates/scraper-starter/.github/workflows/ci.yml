@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "templates/scraper-starter/**"
+      - ".github/workflows/scraper-starter-ci.yml"
+  pull_request:
+    paths:
+      - "templates/scraper-starter/**"
+
+defaults:
+  run:
+    working-directory: templates/scraper-starter
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install deps
+        run: uv sync --extra dev
+
+      - name: Lint (ruff)
+        run: uv run ruff check src tests
+
+      - name: Format check (ruff)
+        run: uv run ruff format --check src tests
+
+      - name: Type check (pyright strict)
+        run: uv run pyright src
+
+      - name: Tests
+        run: uv run pytest -v
