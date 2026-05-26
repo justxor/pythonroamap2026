@@ -13,7 +13,10 @@
 
 🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу.
 
-📣 **Главный Telegram-канал для русскоязычных питонистов:** [t.me/pythonl](https://t.me/pythonl) — новости, библиотеки, разборы, вакансии. Подписаться обязательно — на одну закладку меньше держать в браузере.
+📣 **Главные Telegram-источники этого роадмапа:**
+> - 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, вакансии.
+> - 🤖 **[t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — практика и примеры кода по AI / ML / Big Data на Python: модели, ноутбуки, бенчмарки, статьи с разбором.
+> - 📚 **[Отборная папка ресурсов 🎁](https://t.me/addlist/8vDUwYRGujRmZjFi)** — кураторская подборка лучших Telegram-каналов по Python, ML, DS и инфраструктуре. Подписался один раз — закрыл вопрос «где брать актуальное».
 
 ---
 
@@ -2185,7 +2188,13 @@ pandas медленный на 10M+ строк, теряет память в ETL
 
 ## 💬 Telegram-каналы 2026
 
-> Главное место для оперативных новостей и обсуждения. Подпишись на 3–4 основных.
+> Главное место для оперативных новостей, разборов и обсуждения. Подпишись на 3–4 основных.
+
+### 🎁 Отборная папка ресурсов (one-click setup)
+
+> 📚 **[Открыть папку →](https://t.me/addlist/8vDUwYRGujRmZjFi)** — одним нажатием добавь себе кураторскую подборку лучших каналов по Python, ML, DS, AI и инфраструктуре. Это короткий путь к качественной ленте: меньше шума — больше пользы. Идеально для тех, кто только начинает и не хочет тратить недели на поиск «правильных» каналов.
+
+### 🐍 Python — must-read
 
 - 📣 **[t.me/pythonl](https://t.me/pythonl)** — главный русскоязычный канал: новости, библиотеки, разборы, вакансии. **Подписаться в первую очередь.**
 - 💬 [@ru_python](https://t.me/ru_python) — чат и канал русскоязычного сообщества.
@@ -2193,6 +2202,19 @@ pandas медленный на 10M+ строк, теряет память в ETL
 - 💬 [@pythontalk](https://t.me/pythontalk) — обсуждения, флуд, q&a.
 - 💬 [@python_easy_en](https://t.me/python_easy_en) — короткие подсказки на каждый день.
 - 💬 [@PythonHub](https://t.me/PythonHub) — англоязычный агрегатор статей.
+
+### 🤖 AI / ML / Data Science — практика и код
+
+- 🔥 **[t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — практика и примеры кода по AI / ML / Big Data на Python: разборы моделей, ноутбуки, бенчмарки, свежие статьи и репозитории. **Лучший источник, если идёшь в ML/DS.**
+- 📊 [@data_analysis_ml](https://t.me/data_analysis_ml) — анализ данных и Machine Learning на практике.
+- 🧠 [@machinelearning_interview](https://t.me/machinelearning_interview) — подготовка к собеседованиям по ML.
+- 🤖 [@ds_interview_lib](https://t.me/ds_interview_lib) — задачи и тесты по Data Science.
+
+### 🛠 Бэкенд / DevOps / Архитектура
+
+- 🌐 [@django_prog](https://t.me/django_prog) — Django, FastAPI, веб-разработка.
+- 🐳 [@DevOPSitsec](https://t.me/DevOPSitsec) — Docker, Kubernetes, CI/CD.
+- 🏗 [@SystemDesign](https://t.me/SystemDesign) — system design, архитектура распределённых систем.
 
 ---
 
