@@ -11,7 +11,9 @@
 ![Telegram](https://img.shields.io/badge/Telegram-%40pythonl-26A5E4?logo=telegram)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу. Отдельный этап — [🤖 Вайбкодинг (AI-assisted dev)](course/stage-14-vibecoding.md): Claude Code, Cursor, Copilot, локальные модели.
+🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу. Отдельные этапы:
+> - [🤖 Вайбкодинг (AI-assisted dev)](course/stage-14-vibecoding.md) — Claude Code, Cursor, Copilot, локальные модели.
+> - [🕸 Парсинг и веб-скрапинг 2026](course/stage-15-parsing.md) — httpx, selectolax, Playwright, Scrapy, crawl4ai, антибот, этика.
 
 📣 **Главные Telegram-источники этого роадмапа:**
 > - 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, вакансии.
@@ -2239,6 +2241,41 @@ Review  → «объясни этот патч построчно, найди б
 - 📺 [Anthropic — Claude Code tutorials](https://www.youtube.com/@AnthropicAI).
 - 🎓 **Полный урок в курсе:** [course/stage-14-vibecoding.md](course/stage-14-vibecoding.md) — 11 уроков, 5 упражнений, пример `CLAUDE.md`, локальный стек, чеклист.
 - 💬 **Telegram:** [@ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — свежие модели кода, бенчмарки, инструменты.
+
+---
+
+## 🕸 Парсинг и веб-скрапинг 2026
+
+> Сбор данных с веба — отдельная инженерная дисциплина. Включена в курс как этап 15, потому что почти любой AI/ML/аналитический проект начинается с данных, а API «закрытое» или «дорогое».
+
+### 🧰 Стек 2026
+
+| Слой | Инструмент | Заметка |
+|---|---|---|
+| HTTP | `httpx` (sync/async, HTTP/2) | Современная замена `requests` |
+| HTML | `selectolax` (lexbor) | В 5–20× быстрее BeautifulSoup |
+| CSS/XPath | `parsel` | Удобный селекторный API из Scrapy |
+| JS-рендер | `Playwright` | Async, авто-ожидания, headless |
+| Антидетект | `curl_cffi`, `camoufox`, `playwright-stealth` | TLS-fingerprint, stealth |
+| Краулер | `Scrapy 2.12+`, `crawlee-python` | Очереди, дедуп, ретраи |
+| LLM-парсинг | `crawl4ai`, `firecrawl`, `markitdown` | HTML → Markdown для RAG |
+| Хранение | `Polars` + `Parquet` + `DuckDB` | Аналитика на терабайтах |
+
+### 🧭 Принципы
+
+1. **API > парсинг.** Сначала проверь, есть ли официальное API или скрытый JSON-endpoint в DevTools → Network.
+2. **Async > sync.** Один процесс с `asyncio + httpx` тянет 1000+ RPS, не теряя памяти.
+3. **Этика и закон.** Уважай `robots.txt`, ToS, GDPR/152-ФЗ. Не собирай персональные данные без основания.
+4. **Устойчивость.** `tenacity` для ретраев, `aiolimiter` для rate-limit, кеш через `hishel`.
+5. **LLM-friendly формат.** Для RAG/датасетов парси сразу в Markdown через `crawl4ai`.
+
+### 📚 Ресурсы
+
+- 🎓 **Полный урок в курсе:** [course/stage-15-parsing.md](course/stage-15-parsing.md) — 15 уроков, 7 упражнений, антибот, прокси, Scrapy + Crawlee, LLM-парсинг.
+- 📕 [httpx docs](https://www.python-httpx.org), [Playwright Python](https://playwright.dev/python/), [Scrapy docs](https://docs.scrapy.org).
+- 📕 [Apify Academy](https://docs.apify.com/academy) — бесплатные курсы по скрапингу.
+- 📕 [crawl4ai](https://github.com/unclecode/crawl4ai), [firecrawl](https://github.com/mendableai/firecrawl) — LLM-friendly парсеры.
+- 💬 **Telegram:** [@pythonl](https://t.me/pythonl) — Python-практика, [@ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — датасеты под ML.
 
 ---
 
