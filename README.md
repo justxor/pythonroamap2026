@@ -11,6 +11,8 @@
 ![Telegram](https://img.shields.io/badge/Telegram-%40pythonl-26A5E4?logo=telegram)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу.
+
 📣 **Главный Telegram-канал для русскоязычных питонистов:** [t.me/pythonl](https://t.me/pythonl) — новости, библиотеки, разборы, вакансии. Подписаться обязательно — на одну закладку меньше держать в браузере.
 
 ---
