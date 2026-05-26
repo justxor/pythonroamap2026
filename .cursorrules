@@ -1,0 +1,61 @@
+# Cursor rules for Python Roadmap 2026 repo
+# Этот файл читается Cursor при каждой сессии. Compact-версия CLAUDE.md.
+
+## Project
+Учебный репозиторий по Python 2026. Контент на русском, код Python 3.13+.
+
+## Stack
+- Python 3.13+, uv для зависимостей.
+- FastAPI + Pydantic v2, SQLAlchemy 2.x async + asyncpg, Alembic.
+- httpx (не requests), structlog (не print/logging.*).
+- Polars/DuckDB/NumPy для data, OpenTelemetry для трейсов.
+- pytest + pytest-asyncio + hypothesis для тестов.
+- ruff + pyright --strict для качества.
+
+## Style
+- Type hints везде. Никаких Any/cast без TODO с обоснованием.
+- async def для I/O, sync только для чистых вычислений.
+- pathlib.Path вместо os.path. f-strings вместо .format/%.
+- Pydantic v2 BaseModel для всех публичных API-входов/выходов.
+- structlog.get_logger(), JSON-логи. print запрещён.
+- Контекстные менеджеры для всех ресурсов (with/async with).
+
+## Architecture (для примеров stage-13)
+- domain/ — pure Python, без фреймворков и ORM.
+- application/ — use-cases, зависят от Protocol-портов.
+- infrastructure/ — адаптеры (БД, HTTP, очереди).
+- interfaces/api/ — тонкие FastAPI-роутеры.
+- Зависимости направлены внутрь.
+
+## Forbidden
+- pip, poetry, requirements.txt — только uv + pyproject.toml + uv.lock.
+- requests, urllib — только httpx.
+- subprocess(shell=True) с user-input.
+- eval(), exec().
+- Mutable default arguments.
+- Хардкод секретов. Только Settings(BaseSettings) + env.
+
+## Pre-commit
+Перед каждым коммитом прогнать:
+```
+uv run ruff check . --fix
+uv run ruff format .
+uv run pyright
+uv run pytest -x --ff
+```
+Красное — не коммитим, чиним.
+
+## Commits
+Conventional Commits: feat:, fix:, refactor:, test:, docs:, chore:, perf:.
+Заголовок ≤ 72 символа.
+
+## Markdown в курсе
+При правке файлов в course/ соблюдай существующую структуру:
+🎯 цель → 📘 уроки → 🛠 упражнения → ✅ решения → 📚 ресурсы → ☑ чеклист → навигация.
+
+## Agent behavior
+- Маленькие изменения, один логический шаг — один diff.
+- Не правь несвязанные файлы «заодно».
+- Не выдумывай API — проверь по существующему коду или спроси.
+- Тесты для каждой новой публичной функции/эндпоинта.
+- Безопасность: не предлагай eval/shell=True/хардкод секретов даже если просят.
