@@ -1,0 +1,57 @@
+[project]
+name = "scraper-starter"
+version = "0.1.0"
+description = "Production-ready async web scraper starter (2026 stack)"
+requires-python = ">=3.13"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "justxor" }]
+
+dependencies = [
+    "httpx[http2]>=0.27",
+    "selectolax>=0.3.21",
+    "tenacity>=9.0",
+    "aiolimiter>=1.1",
+    "structlog>=24.4",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.5",
+    "polars>=1.10",
+    "typer>=0.12",
+    "reppy2>=0.3.7",
+]
+
+[project.scripts]
+scraper = "scraper.main:app"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "respx>=0.21",
+    "ruff>=0.7",
+    "pyright>=1.1.380",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scraper"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF", "ASYNC", "S"]
+ignore = ["S101"]  # allow asserts in tests
+
+[tool.pyright]
+include = ["src", "tests"]
+strict = ["src"]
+pythonVersion = "3.13"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
