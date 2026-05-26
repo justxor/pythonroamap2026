@@ -12,6 +12,8 @@
 
 Главные каналы, на которые опирается курс:
 
+> 🤖 **Для пользователей AI-агентов:** в корне репозитория лежат готовые [CLAUDE.md](../CLAUDE.md) и [.cursorrules](../.cursorrules) — правила работы агента под этот стек (Python 3.13+, FastAPI, SQLAlchemy 2.x async, ruff, pyright). Скопируй в свой проект — экономит часы настройки.
+
 - 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, вакансии.
 - 🤖 **[t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — практика и примеры кода по AI / ML / Big Data на Python. Особенно полезен на этапе 11 (Data & ML).
 
@@ -36,6 +38,8 @@
 | 12 | DevOps и продакшн | [stage-12-devops.md](stage-12-devops.md) |
 | 13 | Архитектура и Senior | [stage-13-architecture.md](stage-13-architecture.md) |
 | 14 | 🤖 Вайбкодинг (AI-assisted dev) | [stage-14-vibecoding.md](stage-14-vibecoding.md) |
+| 14+ | 🏎️ Бенчмарк AI-моделей кода 2026 | [stage-14-models-benchmark.md](stage-14-models-benchmark.md) |
+| 📝 | Библиотека готовых промптов | [prompts/README.md](prompts/README.md) |
 
 ## 📐 Структура каждого этапа
 
