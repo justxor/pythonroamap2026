@@ -11,7 +11,7 @@
 ![Telegram](https://img.shields.io/badge/Telegram-%40pythonl-26A5E4?logo=telegram)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу.
+🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу. Отдельный этап — [🤖 Вайбкодинг (AI-assisted dev)](course/stage-14-vibecoding.md): Claude Code, Cursor, Copilot, локальные модели.
 
 📣 **Главные Telegram-источники этого роадмапа:**
 > - 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, вакансии.
@@ -86,6 +86,7 @@
 - [Этап 12. DevOps и продакшн](#этап-12-devops-и-продакшн)
 - [Этап 13. Архитектура и Senior](#этап-13-архитектура-и-senior)
 - [📚 Бесплатные ресурсы](#-бесплатные-ресурсы-общая-подборка)
+- [🤖 Вайбкодинг (AI-assisted dev)](#-вайбкодинг--разработка-с-ai-в-2026)
 - [💬 Telegram-каналы](#-telegram-каналы-2026)
 - [🧠 Платформы для практики](#-платформы-для-практики)
 - [✅ Финальный чеклист Middle+](#-финальный-чеклист-middle)
@@ -2183,6 +2184,61 @@ pandas медленный на 10M+ строк, теряет память в ETL
 - [PyCoder's Weekly](https://pycoders.com/).
 - [Python Weekly](https://www.pythonweekly.com/).
 - [Awesome Python Newsletter](https://python.libhunt.com/newsletter).
+
+---
+
+## 🤖 Вайбкодинг — разработка с AI в 2026
+
+> Вайбкодинг (vibe coding) — стиль работы, когда ты задаёшь *направление и контекст*, а LLM пишет код. Ты ревьюишь, ведёшь архитектуру, отвечаешь за качество. Это **базовый навык Python-разработчика 2026 года**.
+
+```
+   ТЫ                                LLM
+┌────────────┐                   ┌────────────┐
+│ контекст   │ ────задача────►   │ генерация  │
+│ архитектура│                   │ кода       │
+│ ревью      │ ◄────патч─────    │            │
+│ тесты      │                   │            │
+└────────────┘                   └────────────┘
+```
+
+### Стек вайбкодинга 2026
+
+| Категория | Инструменты | Когда использовать |
+|---|---|---|
+| **Агент в IDE** | Cursor, Windsurf | многошаговая правка нескольких файлов |
+| **Агент в CLI** | Claude Code, Aider | рефакторинг, агент видит весь проект |
+| **Автодополнение** | GitHub Copilot, Codeium, Supermaven | повседневный typing-by-typing |
+| **Open-source / локально** | Continue.dev + ollama (qwen2.5-coder, deepseek-coder, codestral) | приватность, нет интернета |
+| **Чат-ассистент** | Claude.ai, ChatGPT, локальный open-webui | архитектура, ревью, объяснения |
+
+### Главные правила
+
+- 🧠 **LLM = турбо-джун с энциклопедией.** Знает синтаксис лучше тебя, но не помнит вчерашний разговор и врёт уверенно. Контекст — твоя ответственность.
+- 📝 **Промпт по структуре CTRL:** Context → Task → Rules → Lens. Дай стек, задачу, ограничения и формат ответа.
+- 📁 **`.cursorrules` / `CLAUDE.md`** — зафиксируй стек, запреты, стиль один раз. Агент будет читать каждую сессию.
+- 🧪 **TDD-вайбкодинг:** сначала docstring → проси тесты → ревьюй спеку → проси реализацию → запускай pytest.
+- 🚨 **Красные флаги в коде от LLM:** `# TODO` без реализации, `eval()` без причины, импорт несуществующего модуля, «магическое» решение сложной задачи в 3 строки.
+- 🔒 **Безопасность:** никогда не давай LLM `.env` и секреты; security-критичный код (auth, payments, crypto) — тройное ревью; `gitleaks` в pre-commit.
+
+### Воркфлоу одного дня
+
+```
+Утро    → Claude.ai: «декомпозируй фичу X на задачи, укажи риски»
+День    → Cursor agent: реализация фичи по @file-mention
+Сложное → Claude Code в CLI: «найди все места где...»
+Тесты   → «параметризованный pytest для всех edge cases + hypothesis»
+PR      → «сформируй PR description, проверь нет ли лишнего»
+Review  → «объясни этот патч построчно, найди баги»
+```
+
+### Бесплатные ресурсы
+
+- 📕 [Claude Code docs](https://docs.anthropic.com/claude-code), [Cursor docs](https://docs.cursor.com/), [Aider](https://aider.chat/), [Continue.dev](https://docs.continue.dev/).
+- 📕 [Ollama library](https://ollama.com/library) — каталог локальных моделей кода.
+- 📺 [Andrej Karpathy — Software 1.0/2.0/3.0](https://www.youtube.com/@AndrejKarpathy) — концепция от автора термина.
+- 📺 [Anthropic — Claude Code tutorials](https://www.youtube.com/@AnthropicAI).
+- 🎓 **Полный урок в курсе:** [course/stage-14-vibecoding.md](course/stage-14-vibecoding.md) — 11 уроков, 5 упражнений, пример `CLAUDE.md`, локальный стек, чеклист.
+- 💬 **Telegram:** [@ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — свежие модели кода, бенчмарки, инструменты.
 
 ---
 
