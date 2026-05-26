@@ -39,6 +39,7 @@
 | 13 | Архитектура и Senior | [stage-13-architecture.md](stage-13-architecture.md) |
 | 14 | 🤖 Вайбкодинг (AI-assisted dev) | [stage-14-vibecoding.md](stage-14-vibecoding.md) |
 | 14+ | 🏎️ Бенчмарк AI-моделей кода 2026 | [stage-14-models-benchmark.md](stage-14-models-benchmark.md) |
+| 15 | 🕸 Парсинг и веб-скрапинг | [stage-15-parsing.md](stage-15-parsing.md) |
 | 📝 | Библиотека готовых промптов | [prompts/README.md](prompts/README.md) |
 
 ## 📐 Структура каждого этапа
