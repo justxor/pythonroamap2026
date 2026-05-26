@@ -251,6 +251,7 @@ print(df.select(pl.corr("Age", "Fare")))
 
 ## 📚 Бесплатные ресурсы
 
+### 📺 Видео и книги
 - 📕 [NumPy User Guide](https://numpy.org/doc/stable/user/).
 - 📕 [Polars Book](https://docs.pola.rs/) — отличная документация.
 - 📕 [DuckDB docs](https://duckdb.org/docs/).
@@ -258,7 +259,11 @@ print(df.select(pl.corr("Age", "Fare")))
 - 📺 [StatQuest](https://www.youtube.com/@statquest) — ML на пальцах.
 - 📺 [3Blue1Brown — Neural Networks](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi).
 - 📕 [HuggingFace Course](https://huggingface.co/learn) — бесплатно про трансформеры и RAG.
-- 💬 **Telegram: [@pythonl](https://t.me/pythonl)**.
+
+### 💬 Telegram-каналы (особенно важно на этом этапе)
+- 🔥 **[@ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — must-read для этого этапа: ежедневный поток практических примеров кода по AI/ML/Big Data, разборы моделей, ноутбуки, бенчмарки, свежие репозитории и статьи.
+- 🐍 **[@pythonl](https://t.me/pythonl)** — общий канал по Python.
+- 📚 **[Папка лучших ресурсов 🎁](https://t.me/addlist/8vDUwYRGujRmZjFi)** — кураторская подборка каналов по Python, ML, DS и инфраструктуре. Один клик — готовая лента.
 
 ---
 
