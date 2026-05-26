@@ -1,234 +1,289 @@
-# Этап 12. DevOps и продакшн
+# Этап 12. DevOps — Docker, structlog, OpenTelemetry, deploy
 
-> 🎯 Довести Python-сервис до prod: Docker, конфиги, логи, метрики, CI/CD.
-> ⏱ 3 недели.
-
-[← К оглавлению](README.md)
-
-## Содержание
-
-- [Урок 1. Docker (multi-stage + uv)](#урок-1-docker-multi-stage--uv)
-- [Урок 2. structlog и pydantic-settings](#урок-2-structlog-и-pydantic-settings)
-- [Урок 3. OpenTelemetry](#урок-3-opentelemetry)
-- [Упражнение](#упражнение)
+> ⏱ Время: 2 недели  
+> 🎯 Цель: упаковать приложение в Docker, настроить структурные логи, метрики и трейсы (OpenTelemetry), деплоить через CI/CD, делать healthcheck'и и rolling-обновления.
 
 ---
 
-## Урок 1. Docker (multi-stage + uv)
+## 📘 Урок 12.1 — Docker за час
 
-### Простой Dockerfile (плохо)
-
-```dockerfile
-FROM python:3.13-slim
-WORKDIR /app
-COPY . .
-RUN pip install -e .
-CMD ["python", "-m", "src.app"]
+```
+┌──────────── Dockerfile ────────────┐
+│  FROM python:3.13-slim             │
+│       ↓                            │
+│  COPY pyproject.toml uv.lock /app/ │
+│       ↓                            │
+│  RUN  uv sync                      │
+│       ↓                            │
+│  COPY . /app                       │
+│       ↓                            │
+│  CMD  uvicorn app.main:app         │
+└────────────────────────────────────┘
 ```
 
-Минусы: огромный образ, нет кеша слоёв.
-
-### Multi-stage + uv (правильно 2026)
+**Multi-stage сборка** (минимальный production-образ):
 
 ```dockerfile
-# syntax=docker/dockerfile:1.9
+# syntax=docker/dockerfile:1.7
 FROM python:3.13-slim AS builder
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /app
+RUN pip install -U uv
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 FROM python:3.13-slim AS runtime
 WORKDIR /app
+RUN useradd -r -u 1000 app
 COPY --from=builder /app/.venv /app/.venv
-COPY src ./src
+COPY app ./app
+USER app
 ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONUNBUFFERED=1
-USER 1000
-CMD ["python", "-m", "src.app"]
+EXPOSE 8000
+HEALTHCHECK --interval=30s CMD curl -fsS http://127.0.0.1:8000/healthz || exit 1
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-Результат: ~150-200 МБ, зависимости в кешируемом слое, non-root.
-
-### .dockerignore
-
+**.dockerignore** обязателен:
 ```
+.git
+.venv
 __pycache__
 *.pyc
-.venv
-.git
-.pytest_cache
-.ruff_cache
 tests
-docs
-```
-
-### docker-compose для разработки
-
-```yaml
-services:
-  api:
-    build: .
-    ports: ["8000:8000"]
-    environment:
-      - DB_URL=postgresql+asyncpg://u:p@db:5432/app
-    depends_on: [db, redis]
-
-  db:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: u
-      POSTGRES_PASSWORD: p
-      POSTGRES_DB: app
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7-alpine
-
-volumes:
-  db_data:
+.env
 ```
 
 ---
 
-## Урок 2. structlog и pydantic-settings
+## 📘 Урок 12.2 — docker-compose для локальной разработки
 
-### pydantic-settings
-
-```python
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-    db_url: str
-    redis_url: str = "redis://localhost"
-    debug: bool = False
-
-settings = Settings()
+```yaml
+# docker-compose.yml
+services:
+  app:
+    build: .
+    ports: ["8000:8000"]
+    env_file: .env
+    depends_on:
+      db: { condition: service_healthy }
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 5s
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+volumes: { pgdata: {} }
 ```
 
-### structlog — JSON-логи
+```bash
+docker compose up --build
+```
+
+---
+
+## 📘 Урок 12.3 — Структурные логи (structlog)
+
+Текстовые логи нечитаемы для машин. JSON-логи — стандарт для production.
+
+```bash
+uv add structlog
+```
 
 ```python
-import structlog
-import logging
+# app/logging.py
+import logging, structlog, sys
 
-structlog.configure(
-    processors=[
-        structlog.contextvars.merge_contextvars,
-        structlog.processors.add_log_level,
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.JSONRenderer(),
-    ],
-    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
-)
+def setup_logging(level: str = "INFO") -> None:
+    logging.basicConfig(format="%(message)s", stream=sys.stdout, level=level)
+    structlog.configure(
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            structlog.processors.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.dict_tracebacks,
+            structlog.processors.JSONRenderer(),
+        ],
+        wrapper_class=structlog.make_filtering_bound_logger(getattr(logging, level)),
+    )
 
 log = structlog.get_logger()
-log.info("user.signup", user_id=42, plan="pro")
-# {"event":"user.signup","user_id":42,"plan":"pro","level":"info","timestamp":"..."}
 ```
 
-### Контекст запроса (request_id)
+Использование:
+```python
+log.info("user_login", user_id=42, ip="1.2.3.4")
+# {"event":"user_login","user_id":42,"ip":"1.2.3.4","level":"info","timestamp":"2026-01-15T12:00:00Z"}
+```
+
+**Запрещено** логировать пароли, токены, PII. Используй scrubber'ы.
+
+---
+
+## 📘 Урок 12.4 — Корреляция запросов (request_id)
 
 ```python
-from uuid import uuid4
+import uuid, structlog
+from fastapi import Request
 
 @app.middleware("http")
-async def add_request_id(request, call_next):
-    rid = str(uuid4())
+async def add_request_id(request: Request, call_next):
+    rid = request.headers.get("x-request-id") or uuid.uuid4().hex
     structlog.contextvars.bind_contextvars(request_id=rid)
-    response = await call_next(request)
-    structlog.contextvars.clear_contextvars()
+    try:
+        response = await call_next(request)
+    finally:
+        structlog.contextvars.clear_contextvars()
+    response.headers["x-request-id"] = rid
     return response
 ```
 
-Все логи в рамках запроса автоматически содержат `request_id`.
+Теперь все логи в рамках одного запроса автоматически содержат `request_id`.
 
 ---
 
-## Урок 3. OpenTelemetry
+## 📘 Урок 12.5 — OpenTelemetry: трейсы, метрики, логи
+
+OTel — единый стандарт для observability. Один SDK, любой backend (Jaeger, Tempo, DataDog, New Relic).
 
 ```bash
-uv add opentelemetry-api opentelemetry-sdk        opentelemetry-instrumentation-fastapi        opentelemetry-exporter-otlp
+uv add opentelemetry-distro opentelemetry-exporter-otlp \
+       opentelemetry-instrumentation-fastapi \
+       opentelemetry-instrumentation-sqlalchemy \
+       opentelemetry-instrumentation-httpx
+uv run opentelemetry-bootstrap -a install
 ```
 
-### Инициализация
-
 ```python
+# app/otel.py
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-resource = Resource.create({"service.name": "my-api"})
-provider = TracerProvider(resource=resource)
-provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint="http://localhost:4317")))
-trace.set_tracer_provider(provider)
-
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter(endpoint="http://otel-collector:4318/v1/traces"))
+)
 tracer = trace.get_tracer(__name__)
-```
 
-### Авто-инструментирование FastAPI
-
-```python
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-FastAPIInstrumentor.instrument_app(app)
-```
-
-### Свои спаны
-
-```python
-@app.get("/process")
-def process():
-    with tracer.start_as_current_span("validate"):
-        ...
-    with tracer.start_as_current_span("db.query"):
+@app.get("/work")
+def work() -> dict:
+    with tracer.start_as_current_span("compute"):
         ...
     return {"ok": True}
 ```
 
-### Просмотр
-
-- Jaeger: `docker run -p 16686:16686 -p 4317:4317 jaegertracing/all-in-one`
-- Grafana Tempo (prod).
+Запускай рядом локальный коллектор: `otel/opentelemetry-collector` + Jaeger/Tempo для просмотра.
 
 ---
 
-## Упражнение. Задеплоить FastAPI
+## 📘 Урок 12.6 — Метрики и алерты
 
-Возьми API из этапа 9 и:
+**RED-метрики** (для сервисов):
+- **R**ate — RPS.
+- **E**rrors — частота 5xx.
+- **D**uration — p50/p95/p99 latency.
 
-1. Multi-stage Dockerfile с uv.
-2. docker-compose с Postgres, Redis, Jaeger.
-3. pydantic-settings + structlog + OpenTelemetry.
-4. Health endpoint `/healthz`.
-5. README с инструкцией: `docker compose up` → API на :8000, Jaeger на :16686.
+**USE-метрики** (для ресурсов):
+- **U**tilization, **S**aturation, **E**rrors.
 
-Бонус: pre-commit + GitHub Actions CI, pip-audit, bandit.
-
----
-
-## Чеклист и ресурсы
-
-- [ ] Multi-stage Docker < 200 МБ
-- [ ] Настроен CI: lint + typecheck + test + build
-- [ ] structlog с JSON-форматом
-- [ ] Понимаю span, trace, контекст распространения
-- [ ] OpenTelemetry → Jaeger работает
-- [ ] Знаю HPA в Kubernetes
-
-Ресурсы:
-- 📘 [12-Factor App](https://12factor.net/) — must-read
-- 📘 [Docker Get Started](https://docs.docker.com/get-started/)
-- 📘 [Kubernetes basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
-- 🎥 [TechWorld with Nana](https://www.youtube.com/@TechWorldwithNana)
-- 📘 [structlog docs](https://www.structlog.org/)
-- 📘 [OpenTelemetry Python](https://opentelemetry.io/docs/instrumentation/python/)
-- 📝 [Hynek Schlawack](https://hynek.me/articles/)
-- 💬 [t.me/pythonl](https://t.me/pythonl)
+Prometheus + Grafana — бесплатный стандарт. Питон-клиент `prometheus-client` + `/metrics` эндпоинт.
 
 ---
 
-[← Этап 11](stage-11-data-ml.md) · [К оглавлению](README.md) · [Этап 13 →](stage-13-architecture.md)
+## 📘 Урок 12.7 — CI/CD
+
+```yaml
+# .github/workflows/release.yml
+name: Release
+on: { push: { tags: ["v*"] } }
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+```
+
+Деплой: GitOps (ArgoCD/FluxCD), либо `kubectl set image`, либо просто `docker compose pull && up -d` для маленьких проектов.
+
+---
+
+## 📘 Урок 12.8 — Секреты
+
+- **Никогда** не коммить секреты. `.env` в `.gitignore`.
+- Используй: GitHub Actions Secrets, Doppler, Vault, AWS Secrets Manager, Kubernetes Secrets.
+- В коде читай через `pydantic-settings` (этап 9).
+
+---
+
+## 🛠 Упражнения
+
+### Упражнение 12.1 — Multi-stage Dockerfile
+Упакуй своё FastAPI-приложение из этапа 9. Образ должен быть < 200 МБ, юзер не root, есть healthcheck.
+
+### Упражнение 12.2 — compose
+Подними `app + postgres + redis` через docker-compose. Добавь healthcheck'и для всех.
+
+### Упражнение 12.3 — Structured logs
+Подключи structlog к проекту. Добавь middleware с `request_id`. Сделай так, чтобы все логи запроса содержали `request_id`, `user_id` (если есть), `route`.
+
+### Упражнение 12.4 — OpenTelemetry
+Подними локально `otel-collector + jaeger` через compose. Инструментируй FastAPI. Сделай 5 запросов и найди их трейсы в Jaeger UI.
+
+---
+
+## ✅ Решение 12.1 (Dockerfile)
+
+См. урок 12.1 — он сразу production-ready. Проверка размера:
+```bash
+docker build -t app:latest .
+docker images app:latest    # SIZE должен быть ~150-200 МБ
+docker run --rm -p 8000:8000 app:latest
+curl http://localhost:8000/healthz
+```
+
+---
+
+## 📚 Бесплатные ресурсы
+
+- 📕 [Docker docs](https://docs.docker.com/) — официально.
+- 📕 [Play with Docker](https://labs.play-with-docker.com/) — бесплатная песочница.
+- 📕 [12-Factor App](https://12factor.net/) — манифест для production-приложений.
+- 📕 [structlog docs](https://www.structlog.org/).
+- 📕 [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python/).
+- 📕 [Distributed Systems Observability — Cindy Sridharan (free PDF)](https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/) — бесплатна на сайте автора.
+- 📺 [TechWorld with Nana](https://www.youtube.com/@TechWorldwithNana) — Docker и Kubernetes.
+- 💬 **Telegram: [@pythonl](https://t.me/pythonl)**.
+
+---
+
+## ☑ Чеклист этапа
+
+- [ ] Многоступенчатый Dockerfile, < 200 МБ, не-root юзер, healthcheck.
+- [ ] docker-compose с healthcheck'ами для зависимостей.
+- [ ] JSON-логи через structlog с request_id.
+- [ ] Трейсы через OpenTelemetry, видны в Jaeger.
+- [ ] Метрики Prometheus, дашборд в Grafana.
+- [ ] CI собирает образ, CD деплоит на staging.
+- [ ] Никаких секретов в репозитории.
+
+---
+
+[⬅ Этап 11](stage-11-data-ml.md) | [📚 Оглавление](README.md) | [Этап 13 ➡](stage-13-architecture.md)
