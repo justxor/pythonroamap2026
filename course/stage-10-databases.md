@@ -1,224 +1,279 @@
-# Этап 10. Базы данных и ORM
+# Этап 10. Базы данных — SQL, SQLAlchemy 2.x async, Alembic, миграции, тюнинг
 
-> 🎯 Уверенно писать SQL, читать EXPLAIN, использовать SQLAlchemy 2.x.
-> ⏱ 3 недели.
-
-[← К оглавлению](README.md)
-
-## Содержание
-
-- [Урок 1. SQL основы](#урок-1-sql-основы)
-- [Урок 2. SQLAlchemy 2.x async](#урок-2-sqlalchemy-2x-async)
-- [Урок 3. Alembic-миграции](#урок-3-alembic-миграции)
-- [Упражнение](#упражнение)
+> ⏱ Время: 3 недели  
+> 🎯 Цель: уверенно проектировать схемы, писать SQL, использовать SQLAlchemy 2.x в async-стиле, делать миграции через Alembic, понимать индексы, транзакции и план запроса.
 
 ---
 
-## Урок 1. SQL основы
-
-### SELECT, WHERE, ORDER, LIMIT
+## 📘 Урок 10.1 — SQL за час
 
 ```sql
-SELECT id, email, created_at
-FROM users
-WHERE created_at > '2026-01-01'
-ORDER BY created_at DESC
+-- DDL: схема
+CREATE TABLE users (
+    id          BIGSERIAL PRIMARY KEY,
+    email       VARCHAR(255) NOT NULL UNIQUE,
+    created_at  TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE TABLE posts (
+    id        BIGSERIAL PRIMARY KEY,
+    user_id   BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title     TEXT   NOT NULL,
+    body      TEXT
+);
+
+-- DML: данные
+INSERT INTO users(email) VALUES ('a@b.c') RETURNING id;
+
+-- Чтение
+SELECT u.email, COUNT(p.id) AS n_posts
+FROM users u
+LEFT JOIN posts p ON p.user_id = u.id
+GROUP BY u.id
+HAVING COUNT(p.id) > 0
+ORDER BY n_posts DESC
 LIMIT 10;
 ```
 
-### JOIN
-
-```sql
-SELECT u.email, o.id AS order_id, o.total
-FROM users u
-JOIN orders o ON o.user_id = u.id
-WHERE o.created_at > '2026-01-01';
+**Шпаргалка JOIN:**
 ```
-
-Виды: `INNER JOIN` (пересечение), `LEFT JOIN` (все слева), `FULL OUTER JOIN` (все).
-
-### GROUP BY + агрегаты
-
-```sql
-SELECT user_id, COUNT(*) AS orders_count, SUM(total) AS revenue
-FROM orders
-WHERE created_at > '2026-01-01'
-GROUP BY user_id
-HAVING COUNT(*) > 5
-ORDER BY revenue DESC;
-```
-
-### Оконные функции
-
-```sql
--- Накопительная сумма
-SELECT user_id, amount,
-       SUM(amount) OVER (PARTITION BY user_id ORDER BY created_at) AS running_total
-FROM payments;
-
--- Рейтинг
-SELECT user_id, amount, RANK() OVER (ORDER BY amount DESC) AS rank
-FROM payments;
-```
-
-### EXPLAIN
-
-```sql
-EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'a@b.c';
-```
-
-Что смотреть: `Seq Scan` (медленно) vs `Index Scan` (быстро), стратегии JOIN (Hash/Nested Loop).
-
-### Индексы
-
-```sql
-CREATE INDEX users_email_idx ON users (email);
-CREATE INDEX users_email_lower_idx ON users (LOWER(email));   -- функциональный
+A INNER  B  — только пересечение
+A LEFT   B  — все A + совпавшие B (отсутствие = NULL)
+A RIGHT  B  — все B + совпавшие A
+A FULL   B  — всё
 ```
 
 ---
 
-## Урок 2. SQLAlchemy 2.x async
+## 📘 Урок 10.2 — Нормальные формы (1NF/2NF/3NF) и денормализация
 
-```bash
-uv add sqlalchemy[asyncio] asyncpg
+- **1NF**: атомарность. Не храни `tags = "a,b,c"` строкой.
+- **2NF**: нет частичной зависимости от части составного ключа.
+- **3NF**: нет транзитивной зависимости (атрибут зависит от ключа, а не от другого атрибута).
+
+В реальном мире иногда **денормализуют** ради скорости чтения (например, кешируют `posts_count` в `users`).
+
+---
+
+## 📘 Урок 10.3 — Индексы и план запроса
+
+```sql
+CREATE INDEX idx_posts_user_id ON posts(user_id);
+CREATE INDEX idx_posts_user_created ON posts(user_id, created_at DESC);
+
+EXPLAIN ANALYZE SELECT * FROM posts WHERE user_id = 42 ORDER BY created_at DESC LIMIT 10;
 ```
 
-### Модели
+- B-tree — дефолтный, для =, <, >, ORDER BY, LIKE 'abc%'.
+- GIN — JSON, массивы, полнотекстовый поиск.
+- Hash — только =, обычно не нужен.
+- **Композитные** индексы работают только с префиксом колонок.
+
+**Правило:** индекс ускоряет чтение, замедляет запись. Без замеров — не добавляй.
+
+---
+
+## 📘 Урок 10.4 — Транзакции и уровни изоляции
+
+```sql
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;  -- или ROLLBACK;
+```
+
+**ACID:** Atomicity, Consistency, Isolation, Durability.
+
+**Уровни изоляции (Postgres дефолт = Read Committed):**
+| Уровень | Грязное чтение | Неповт. чтение | Фантомы |
+|---|---|---|---|
+| Read Uncommitted | да | да | да |
+| Read Committed | нет | да | да |
+| Repeatable Read | нет | нет | да* |
+| Serializable | нет | нет | нет |
+
+* В Postgres RR уже без фантомов (snapshot isolation).
+
+---
+
+## 📘 Урок 10.5 — SQLAlchemy 2.x: Core vs ORM
+
+```bash
+uv add 'sqlalchemy[asyncio]' asyncpg
+```
 
 ```python
+# app/db.py
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from datetime import datetime
-from sqlalchemy import String, ForeignKey, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase): pass
-
+class Base(DeclarativeBase): ...
 
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    orders: Mapped[list["Order"]] = relationship(back_populates="user")
+    email: Mapped[str] = mapped_column(unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-
-class Order(Base):
-    __tablename__ = "orders"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    total: Mapped[float]
-    user: Mapped[User] = relationship(back_populates="orders")
+engine = create_async_engine("postgresql+asyncpg://u:p@localhost/app", echo=False, pool_size=10)
+Session = async_sessionmaker(engine, expire_on_commit=False)
 ```
 
-### Async session
+---
+
+## 📘 Урок 10.6 — Запросы 2.x в стиле `select()`
 
 ```python
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy import select, func
 
-engine = create_async_engine("postgresql+asyncpg://u:p@localhost/db")
-SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+async def top_users(limit: int = 10) -> list[tuple[str, int]]:
+    async with Session() as s:
+        stmt = (
+            select(User.email, func.count(Post.id).label("n"))
+            .join(Post, Post.user_id == User.id, isouter=True)
+            .group_by(User.id)
+            .order_by(func.count(Post.id).desc())
+            .limit(limit)
+        )
+        return list(await s.execute(stmt))
 ```
 
-### CRUD
-
-```python
-from sqlalchemy import select
-
-async def create_user(email: str) -> User:
-    async with SessionLocal() as s:
-        user = User(email=email)
-        s.add(user)
-        await s.commit()
-        await s.refresh(user)
-        return user
-
-async def find_user(email: str) -> User | None:
-    async with SessionLocal() as s:
-        result = await s.execute(select(User).where(User.email == email))
-        return result.scalar_one_or_none()
-```
-
-### N+1 проблема
+**Главный анти-паттерн: N+1 запрос.** Лечится через `selectinload` / `joinedload`:
 
 ```python
 from sqlalchemy.orm import selectinload
 
-# ✅ загрузка orders одним запросом
-stmt = select(User).options(selectinload(User.orders))
+stmt = select(User).options(selectinload(User.posts))
 ```
 
 ---
 
-## Урок 3. Alembic-миграции
+## 📘 Урок 10.7 — Миграции через Alembic
 
 ```bash
 uv add alembic
-uv run alembic init -t async migrations
+uv run alembic init -t async alembic
 ```
 
-В `migrations/env.py`:
-
-```python
-from src.models import Base
-target_metadata = Base.metadata
-```
-
-В `alembic.ini`:
-
-```ini
-sqlalchemy.url = postgresql+asyncpg://u:p@localhost/db
-```
-
-### Автогенерация
+Отредактируй `alembic/env.py`: укажи `target_metadata = Base.metadata` и URL из настроек.
 
 ```bash
-uv run alembic revision --autogenerate -m "create users"
+uv run alembic revision --autogenerate -m "add users"
 uv run alembic upgrade head
 uv run alembic downgrade -1
 ```
 
-### Правила
-
-- Всегда **просматривай** автогенерированную миграцию.
-- Большие данные мигрируй пачками.
-- Всегда умей `downgrade`.
-
----
-
-## Упражнение
-
-User → Order → OrderItem
-
-Создать модели + функции:
-
-1. `async def create_order(user_id, items)` — одна транзакция.
-2. `async def user_revenue(user_id)` — сумма по пользователю.
-3. `async def top_users(n)` — топ N по выручке (использовать JOIN + GROUP BY + ORDER BY).
-
-Требования: SQLAlchemy 2.x async, Alembic, pytest + sqlite (для CI) или TestContainers Postgres.
+**Правила:**
+- Каждую миграцию ревьюй вручную — autogenerate ошибается.
+- Большие миграции делай в несколько шагов (add column nullable → backfill → set not null).
+- Для CI: проверяй, что `alembic check` чист.
 
 ---
 
-## Чеклист и ресурсы
+## 📘 Урок 10.8 — Пулы соединений и тюнинг
 
-- [ ] Пишу JOIN-ы и оконные функции без подсказок
-- [ ] Читаю EXPLAIN ANALYZE
-- [ ] Настроены Alembic-миграции
-- [ ] Async SQLAlchemy 2.x в проекте
-- [ ] Знаю когда нужен индекс
-- [ ] Различаю уровни изоляции транзакций
-
-Ресурсы:
-- 📘 [SQLAlchemy 2.x docs](https://docs.sqlalchemy.org/en/20/) — пройти tutorial
-- 📘 [PostgreSQL Tutorial](https://www.postgresqltutorial.com/)
-- 📘 [«Use the Index, Luke!»](https://use-the-index-luke.com/) — free book
-- 📘 [Mode SQL Tutorial](https://mode.com/sql-tutorial/)
-- 🎮 [SQLBolt](https://sqlbolt.com/)
-- 📘 [Alembic docs](https://alembic.sqlalchemy.org/)
-- 📘 [Designing Data-Intensive Applications (free chapters)](https://dataintensive.net/)
-- 💬 [t.me/pythonl](https://t.me/pythonl)
+- Pool size: `(CPU cores * 2) + spindles` для PG. Для async-приложения часто 10-20.
+- `pool_pre_ping=True` — проверка соединения перед использованием.
+- `statement_timeout` на стороне БД, чтобы зависшие запросы не висели вечно.
+- `pgbouncer` (transaction mode) — must-have в продакшне.
 
 ---
 
-[← Этап 9](stage-09-web.md) · [К оглавлению](README.md) · [Этап 11 →](stage-11-data-ml.md)
+## 📘 Урок 10.9 — Когда не SQL: Redis, key-value
+
+- **Кеш** (TTL): `redis.set(key, value, ex=60)`.
+- **Rate limit**: `INCR` + `EXPIRE`.
+- **Очереди**: `LPUSH`/`BRPOP` или Redis Streams.
+- **Pub/Sub**: чаты, уведомления.
+
+⚠️ Redis — не основная БД. Данные в памяти, persistence настраивается.
+
+---
+
+## 🛠 Упражнения
+
+### Упражнение 10.1 — Схема блога
+Спроектируй: `users`, `posts`, `tags`, `post_tags` (many-to-many). Напиши DDL.
+
+### Упражнение 10.2 — Запросы
+К схеме из 10.1 напиши:
+1. Все посты с тегом "python".
+2. Топ-10 авторов по числу постов за последние 30 дней.
+3. Посты без тегов.
+
+### Упражнение 10.3 — SQLAlchemy + Alembic
+Опиши `User/Post/Tag` через 2.x ORM. Создай первую миграцию. Накатить. Откатить.
+
+### Упражнение 10.4 — N+1
+Сделай эндпоинт `GET /users`, возвращающий юзеров со списком их постов. Сначала с N+1, потом исправь через `selectinload`. Замерь время на 1000 юзеров × 10 постов.
+
+---
+
+## ✅ Решение 10.2 (запросы)
+
+```sql
+-- 1) Посты с тегом "python"
+SELECT p.* FROM posts p
+JOIN post_tags pt ON pt.post_id = p.id
+JOIN tags t       ON t.id = pt.tag_id
+WHERE t.name = 'python';
+
+-- 2) Топ-10 авторов за 30 дней
+SELECT u.email, COUNT(p.id) AS n
+FROM users u
+JOIN posts p ON p.user_id = u.id
+WHERE p.created_at >= now() - INTERVAL '30 days'
+GROUP BY u.id
+ORDER BY n DESC
+LIMIT 10;
+
+-- 3) Посты без тегов
+SELECT p.* FROM posts p
+LEFT JOIN post_tags pt ON pt.post_id = p.id
+WHERE pt.tag_id IS NULL;
+```
+
+## ✅ Решение 10.4 (selectinload)
+
+```python
+# Плохо — N+1
+async def bad() -> list[dict]:
+    async with Session() as s:
+        users = (await s.scalars(select(User))).all()
+        return [{"id": u.id, "posts": [p.title for p in u.posts]} for u in users]  # каждый u.posts — отдельный запрос
+
+# Хорошо — один JOIN + один SELECT IN (...)
+async def good() -> list[dict]:
+    async with Session() as s:
+        users = (await s.scalars(select(User).options(selectinload(User.posts)))).all()
+        return [{"id": u.id, "posts": [p.title for p in u.posts]} for u in users]
+```
+
+---
+
+## 📚 Бесплатные ресурсы
+
+- 📕 [PostgreSQL Tutorial](https://www.postgresqltutorial.com/) — лучшее по SQL.
+- 📕 [SQLAlchemy 2.0 docs](https://docs.sqlalchemy.org/) — раздел "Unified Tutorial".
+- 📕 [Alembic docs](https://alembic.sqlalchemy.org/).
+- 📕 [Use the Index, Luke!](https://use-the-index-luke.com/) — про индексы, лучшая бесплатная книга.
+- 📕 [PostgreSQL Exercises](https://pgexercises.com/) — тренажёр SQL.
+- 📺 [ArjanCodes — SQLAlchemy 2.0](https://www.youtube.com/@ArjanCodes).
+- 💬 **Telegram: [@pythonl](https://t.me/pythonl)**.
+
+---
+
+## ☑ Чеклист этапа
+
+- [ ] Пишу SQL: JOIN, GROUP BY, оконные функции.
+- [ ] Понимаю EXPLAIN ANALYZE и могу прочитать план.
+- [ ] Знаю когда нужен индекс (и когда нет).
+- [ ] Различаю уровни изоляции, понимаю аномалии.
+- [ ] Использую SQLAlchemy 2.x в async-стиле.
+- [ ] Решаю N+1 через `selectinload`/`joinedload`.
+- [ ] Делаю миграции через Alembic, ревьюю их вручную.
+
+---
+
+[⬅ Этап 9](stage-09-web.md) | [📚 Оглавление](README.md) | [Этап 11 ➡](stage-11-data-ml.md)
