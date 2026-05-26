@@ -29,6 +29,8 @@
 | [10-docker-ci.md](10-docker-ci.md) | Написать Dockerfile / GitHub Actions workflow |
 | [11-arch-review.md](11-arch-review.md) | Архитектурное ревью / границы модулей |
 | [12-commit-pr.md](12-commit-pr.md) | Описать commit / PR / changelog |
+| [13-write-scraper.md](13-write-scraper.md) | Написать веб-скрапер под конкретный сайт |
+| [14-find-hidden-api.md](14-find-hidden-api.md) | Найти скрытое JSON API, cURL → httpx |
 
 ---
 
