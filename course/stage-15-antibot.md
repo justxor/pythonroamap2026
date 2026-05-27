@@ -246,6 +246,14 @@ Cloudflare/DataDome/PerimeterX строят профиль на основе с�
 
 ## 📚 Ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — AI-парсинг, анти-бот инструменты, ML-fingerprinting.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — Python-инструменты, curl_cffi, playwright-stealth.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 - [curl_cffi](https://github.com/lexiforest/curl_cffi)
 - [camoufox](https://github.com/daijro/camoufox)
 - [playwright-stealth](https://github.com/AtuboDad/playwright_stealth)
