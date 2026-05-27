@@ -1,0 +1,22 @@
+stages:
+  train:
+    cmd: python -m ml_starter.train data/train.parquet
+    deps:
+      - src/ml_starter
+      - data/train.parquet
+    params:
+      - conf/config.yaml:
+          - training
+    outs:
+      - artifacts/model.pkl
+    metrics:
+      - artifacts/metrics.json:
+          cache: false
+
+  explain:
+    cmd: python -m ml_starter.explain data/train.parquet
+    deps:
+      - artifacts/model.pkl
+      - src/ml_starter/explain.py
+    outs:
+      - artifacts/shap_summary.png
