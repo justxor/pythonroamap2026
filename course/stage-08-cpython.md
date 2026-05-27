@@ -260,6 +260,14 @@ bench("4 проц.",  lambda: list(ProcessPoolExecutor(4).map(pi, [N//4]*4)))
 
 ## 📚 Бесплатные ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 - 📕 [CPython Internals — Anthony Shaw (free read on archive)](https://realpython.com/cpython-source-code-guide/).
 - 📕 [PEP 659 — Adaptive Interpreter](https://peps.python.org/pep-0659/).
 - 📕 [PEP 703 — Free-threaded CPython](https://peps.python.org/pep-0703/).
