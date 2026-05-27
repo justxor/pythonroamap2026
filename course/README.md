@@ -4,7 +4,7 @@
 
 Каждый этап — отдельный файл с уроками, примерами кода и упражнениями.
 
-> 🔗 **Быстрые ссылки:** [📖 Глоссарий](./glossary.md) · [🎯 Промпты для LLM](./prompts/README.md) · [⚡ Стартер-скрапер](../templates/scraper-starter/README.md) · [📡 t.me/pythonl](https://t.me/pythonl) · [📚 Папка каналов](https://t.me/addlist/8vDUwYRGujRmZjFi)
+> 🔗 **Быстрые ссылки:** [🗺 Карта обучения](./MAP.md) · [📖 Глоссарий](./glossary.md) · [🎯 Промпты для LLM](./prompts/README.md) · [⚡ Стартер-скрапер](../templates/scraper-starter/README.md) · [📡 t.me/pythonl](https://t.me/pythonl)
 
 ---
 
