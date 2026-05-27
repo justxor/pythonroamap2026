@@ -410,7 +410,16 @@ repos:
 
 ---
 
-## Бесплатные ресурсы
+## 📚 Бесплатные ресурсы
+
+### 🚀 Главные Telegram-источники
+
+1. 🤖 **[t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — практика и примеры кода по Python, AI/ML, Big Data.
+2. 🐍 **[t.me/pythonl](https://t.me/pythonl)** — Python-новости, библиотеки, рубрика «задача дня», вакансии.
+3. 📚 **[Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi)** — кураторская подборка по Python / ML / DS / AI.
+
+### 📘 Документация и материалы
+
 
 - 📘 [docs.astral.sh/uv](https://docs.astral.sh/uv/)
 - 📘 [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)
