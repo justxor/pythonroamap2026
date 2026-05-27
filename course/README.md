@@ -43,6 +43,7 @@
 | 14+ | 🏎️ Бенчмарк AI-моделей кода 2026 | [stage-14-models-benchmark.md](stage-14-models-benchmark.md) |
 | 15 | 🕸 Парсинг и веб-скрапинг | [stage-15-parsing.md](stage-15-parsing.md) |
 | 15+ | 🛡 Антибот: глубокий разбор | [stage-15-antibot.md](stage-15-antibot.md) |
+| 16 | 🤖 Machine Learning (PyTorch / sklearn / HF) | [stage-16-ml.md](stage-16-ml.md) |
 | 📦 | Starter-шаблон скрапера | [templates/scraper-starter](../templates/scraper-starter/) |
 | 📝 | Библиотека готовых промптов | [prompts/README.md](prompts/README.md) |
 
