@@ -362,6 +362,14 @@ LLM **плох** в:
 
 ## 📚 Бесплатные ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — AI-инструменты и модели, разборы, новые стартовые модели для vibe coding.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — Python-новости, AI-тулы, вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 ### 📕 Документация инструментов
 - [Claude Code docs](https://docs.anthropic.com/claude-code).
 - [Cursor docs](https://docs.cursor.com/).
