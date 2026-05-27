@@ -44,6 +44,8 @@
 | 15 | 🕸 Парсинг и веб-скрапинг | [stage-15-parsing.md](stage-15-parsing.md) |
 | 15+ | 🛡 Антибот: глубокий разбор | [stage-15-antibot.md](stage-15-antibot.md) |
 | 16 | 🤖 Machine Learning (PyTorch / sklearn / HF) | [stage-16-ml.md](stage-16-ml.md) |
+| 17 | 🧠 LLM-приложения (RAG / агенты / LangGraph / MCP / vLLM) | [stage-17-llm-apps.md](stage-17-llm-apps.md) |
+| 📦 | Starter-шаблон ML-проекта | [templates/ml-starter](../templates/ml-starter/) |
 | 📦 | Starter-шаблон скрапера | [templates/scraper-starter](../templates/scraper-starter/) |
 | 📝 | Библиотека готовых промптов | [prompts/README.md](prompts/README.md) |
 
