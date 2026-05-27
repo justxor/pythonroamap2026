@@ -1,0 +1,62 @@
+[project]
+name = "ml-starter"
+version = "0.1.0"
+description = "Production-ready ML pipeline starter for Python 2026"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    # data
+    "polars>=1.20",
+    "duckdb>=1.1",
+    "pyarrow>=18",
+    # ML
+    "scikit-learn>=1.5",
+    "lightgbm>=4.5",
+    "catboost>=1.2",
+    # tuning + explain
+    "optuna>=4.1",
+    "shap>=0.46",
+    # tracking + data versioning
+    "mlflow>=2.18",
+    "dvc>=3.55",
+    # serving
+    "bentoml>=1.3",
+    "onnx>=1.17",
+    "onnxruntime>=1.20",
+    "skl2onnx>=1.17",
+    # monitoring
+    "evidently>=0.4",
+    # infra
+    "pydantic-settings>=2.6",
+    "hydra-core>=1.3",
+    "structlog>=24.4",
+    "typer>=0.15",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "pyright>=1.1.390",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "B", "UP", "S", "SIM", "PL", "RUF"]
+ignore = ["S101", "PLR0913"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "PLR2004"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+
+[tool.pytest.ini_options]
+addopts = "-ra --cov=ml_starter --cov-report=term-missing"
+testpaths = ["tests"]
