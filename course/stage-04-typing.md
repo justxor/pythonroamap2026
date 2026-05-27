@@ -255,6 +255,14 @@ class TaskResponse(BaseModel):
 - [ ] Кастомные валидаторы Pydantic
 
 Ресурсы:
+
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
 - 📘 [typing — docs](https://docs.python.org/3/library/typing.html)
 - 📘 [mypy cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html)
 - 📘 [pyright docs](https://microsoft.github.io/pyright/)
