@@ -376,11 +376,19 @@ def sorted_by_area(shapes: list[Shape]) -> list[Shape]:
 - [ ] Понимаю MRO в diamond-наследовании
 - [ ] Применяю SOLID при ревью
 
-Ресурсы:
-- 📘 [Refactoring.guru — паттерны Python](https://refactoring.guru/design-patterns/python)
-- 📘 [faif/python-patterns](https://github.com/faif/python-patterns)
-- 🎥 [ArjanCodes — Design Patterns](https://www.youtube.com/@ArjanCodes/playlists)
-- 💬 [t.me/pythonl](https://t.me/pythonl)
+### 📚 Бесплатные ресурсы
+
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Документация и материалы:**
+
+- [Refactoring.guru — паттерны Python](https://refactoring.guru/design-patterns/python)
+- [faif/python-patterns](https://github.com/faif/python-patterns)
+- [ArjanCodes — Design Patterns (YouTube)](https://www.youtube.com/@ArjanCodes/playlists)
 
 ---
 
