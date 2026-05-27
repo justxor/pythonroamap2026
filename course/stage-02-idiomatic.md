@@ -430,14 +430,21 @@ def sliding_window(iterable: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:
 - [ ] Не делаю mutable defaults
 - [ ] Применяю walrus только где он упрощает код
 
-### Ресурсы
+### 📚 Бесплатные ресурсы
 
-- 📘 [Python Cookbook (Beazley)](https://github.com/dabeaz/python-cookbook)
-- 📘 [itertools recipes](https://docs.python.org/3/library/itertools.html#itertools-recipes)
-- 📝 [Trey Hunner blog](https://treyhunner.com/blog/)
-- 🎥 [mCoding](https://www.youtube.com/@mCoding)
-- 📘 [PEP 8](https://peps.python.org/pep-0008/), [PEP 20](https://peps.python.org/pep-0020/)
-- 💬 [t.me/pythonl](https://t.me/pythonl)
+#### 🚀 Главные Telegram-источники
+
+1. 🤖 **[t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — практика и примеры кода по Python, AI/ML, Big Data.
+2. 🐍 **[t.me/pythonl](https://t.me/pythonl)** — Python-новости, рубрика «задача дня», вакансии.
+3. 📚 **[Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi)** — кураторская подборка по Python / ML / DS / AI.
+
+#### 📘 Документация и материалы
+
+- [Python Cookbook (Beazley)](https://github.com/dabeaz/python-cookbook)
+- [itertools recipes](https://docs.python.org/3/library/itertools.html#itertools-recipes)
+- [Trey Hunner blog](https://treyhunner.com/blog/) — про идиоматичный Python
+- [mCoding (YouTube)](https://www.youtube.com/@mCoding) — короткие ролики про идиомы
+- [PEP 8](https://peps.python.org/pep-0008/), [PEP 20](https://peps.python.org/pep-0020/)
 
 ---
 
