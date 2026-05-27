@@ -3,7 +3,7 @@
 > 🎯 Освоить современный ML-стек: от классики (sklearn) до бустингов, нейросетей и LLM-инфраструктуры.
 > ⏱ 6–10 недель (после этапов 0–11).
 
-[← К оглавлению](README.md) · [← Этап 15: парсинг](stage-15-parsing.md) · [Этап 17 →](stage-17-llm-apps.md)
+[← К оглавлению](README.md) · [← Этап 15: парсинг](stage-15-parsing.md)
 
 > 🤖 **Главные Telegram-источники этого этапа:**
 > 1. [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — практика, модели, ноутбуки, бенчмарки.
@@ -780,4 +780,4 @@ df = pl.read_csv("telco.csv")
 
 ---
 
-[← Этап 15: парсинг](stage-15-parsing.md) · [К оглавлению](README.md) · [Этап 17: LLM-приложения →](stage-17-llm-apps.md)
+[← Этап 15: парсинг](stage-15-parsing.md) · [К оглавлению](README.md)
