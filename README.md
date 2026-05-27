@@ -11,6 +11,8 @@
 ![Telegram](https://img.shields.io/badge/Telegram-%40pythonl-26A5E4?logo=telegram)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+> 🔗 **Навигация:** [🗺 Карта обучения](course/MAP.md) · [📖 Глоссарий](course/glossary.md) · [🎯 Промпты для LLM](course/prompts/README.md) · [⚡ Стартер-скрапер](templates/scraper-starter/README.md) · [📡 t.me/pythonl](https://t.me/pythonl)
+
 🎓 **Практический курс по этому роадмапу:** [course/README.md](course/README.md) — уроки, примеры кода, упражнения и решения по каждому этапу. Отдельные этапы:
 > - [🤖 Вайбкодинг (AI-assisted dev)](course/stage-14-vibecoding.md) — Claude Code, Cursor, Copilot, локальные модели.
 > - [🕸 Парсинг и веб-скрапинг 2026](course/stage-15-parsing.md) — httpx, selectolax, Playwright, Scrapy, crawl4ai, антибот, этика.
