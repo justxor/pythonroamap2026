@@ -251,6 +251,14 @@ print(df.select(pl.corr("Age", "Fare")))
 
 ## 📚 Бесплатные ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — главный канал этапа: AI/ML/Big Data, примеры, ноутбуки.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — Python-новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 ### 📺 Видео и книги
 - 📕 [NumPy User Guide](https://numpy.org/doc/stable/user/).
 - 📕 [Polars Book](https://docs.pola.rs/) — отличная документация.
