@@ -263,6 +263,14 @@ curl http://localhost:8000/healthz
 
 ## 📚 Бесплатные ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 - 📕 [Docker docs](https://docs.docker.com/) — официально.
 - 📕 [Play with Docker](https://labs.play-with-docker.com/) — бесплатная песочница.
 - 📕 [12-Factor App](https://12factor.net/) — манифест для production-приложений.
