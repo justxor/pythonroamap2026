@@ -31,6 +31,9 @@
 | [12-commit-pr.md](12-commit-pr.md) | Описать commit / PR / changelog |
 | [13-write-scraper.md](13-write-scraper.md) | Написать веб-скрапер под конкретный сайт |
 | [14-find-hidden-api.md](14-find-hidden-api.md) | Найти скрытое JSON API, cURL → httpx |
+| [15-ml-baseline.md](15-ml-baseline.md) | ML-baseline за 5 минут (polars + LightGBM + MLflow) |
+| [16-feature-ideas.md](16-feature-ideas.md) | Брейншторм 20 идей фичей с риском утечки |
+| [17-explain-shap.md](17-explain-shap.md) | Интерпретация SHAP-результатов для бизнеса |
 
 ---
 
