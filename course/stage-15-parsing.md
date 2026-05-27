@@ -339,6 +339,14 @@ curl -X POST https://api.firecrawl.dev/v1/scrape \
 
 ## 📚 Ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — AI-парсинг (crawl4ai, firecrawl), LLM-извлечение данных.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — Python-инструменты, библиотеки, вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 **Документация:**
 - [httpx docs](https://www.python-httpx.org)
 - [Playwright Python](https://playwright.dev/python/)
