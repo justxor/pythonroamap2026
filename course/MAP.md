@@ -22,6 +22,7 @@ flowchart TD
     S13 --> S14["Stage 14<br/>Vibecoding<br/>AI-pair"]
     S13 --> S15P["Stage 15<br/>Parsing"]
     S15P --> S15A["Stage 15<br/>Antibot"]
+    S11 --> S16["Stage 16<br/>Machine Learning<br/>sklearn, PyTorch, HF"]
 
     click S0 "./stage-00-environment.md"
     click S1 "./stage-01-basics.md"
@@ -40,6 +41,7 @@ flowchart TD
     click S14 "./stage-14-vibecoding.md"
     click S15P "./stage-15-parsing.md"
     click S15A "./stage-15-antibot.md"
+    click S16 "./stage-16-ml.md"
 ```
 
 ## 🎯 Треки специализации
@@ -52,9 +54,9 @@ flowchart TD
 Цель: senior backend / архитектор. Стек: FastAPI, SQLAlchemy 2.x, Postgres, Docker, OTel, hex/DDD.
 
 ### 📊 Data & ML
-`Stage 8 → 11 (Data & ML) → 14 (Vibecoding)`
+`Stage 8 → 11 (Data & ML) → 16 (Machine Learning) → 14 (Vibecoding)`
 
-Цель: ML / data engineer. Стек: Polars, DuckDB, Parquet, LangGraph, RAG, LLM-агенты.
+Цель: ML / data engineer. Стек: Polars, DuckDB, Parquet, sklearn, PyTorch + Lightning, HuggingFace, MLflow, BentoML, RAG.
 
 ### 🕷 Scraping & интеграции
 `Stage 8 → 15 Parsing → 15 Antibot`
