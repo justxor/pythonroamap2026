@@ -274,6 +274,14 @@ app = create_app()
 
 ## 📚 Бесплатные ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 - 📕 [Architecture Patterns with Python — Cosmic Python (free online)](https://www.cosmicpython.com/) — главная книга про DDD/Hexagonal в Python.
 - 📕 [Domain-Driven Design Reference — Eric Evans (free PDF)](https://www.domainlanguage.com/ddd/reference/).
 - 📕 [Microservices.io — Chris Richardson](https://microservices.io/patterns/) — Outbox, Saga, CQRS.
