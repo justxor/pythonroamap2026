@@ -1,0 +1,17 @@
+# Hydra config for ml-starter
+training:
+  random_seed: 42
+  test_size: 0.2
+  n_folds: 5
+  n_estimators: 2000
+  learning_rate: 0.03
+  early_stopping_rounds: 100
+
+tracking:
+  mlflow_uri: http://localhost:5000
+  experiment_name: ml-starter
+
+tuning:
+  n_trials: 100
+  sampler: tpe
+  pruner: median
