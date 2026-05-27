@@ -369,6 +369,14 @@ async def bulk_get(urls, *, concurrency=10, timeout=10.0):
 - [ ] Корректно обрабатываю CancelledError
 
 Ресурсы:
+
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
 - 📘 [Real Python — Async IO Walkthrough](https://realpython.com/async-io-python/)
 - 📘 [Trio docs](https://trio.readthedocs.io/) — structured concurrency
 - 📝 [Nathaniel Smith — structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
