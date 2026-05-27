@@ -340,6 +340,14 @@ async def test_exhausts_attempts() -> None:
 
 ## 📚 Бесплатные ресурсы
 
+**🚀 Главные Telegram-источники:**
+
+1. 🤖 [t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data) — Python, AI/ML, Big Data — практика и примеры кода.
+2. 🐍 [t.me/pythonl](https://t.me/pythonl) — главный канал по Python: новости, «задача дня», вакансии.
+3. 📚 [Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi) — кураторская подборка по Python / ML / DS / AI.
+
+**📘 Доп. источники:**
+
 - 📕 [pytest docs](https://docs.pytest.org/) — официальная документация.
 - 📕 [Hypothesis docs](https://hypothesis.readthedocs.io/).
 - 📺 [Anthony Sottile — pytest](https://www.youtube.com/@anthonywritescode) — короткие видео по pytest.
