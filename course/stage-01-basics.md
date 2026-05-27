@@ -651,16 +651,37 @@ if __name__ == "__main__":
 
 ---
 
-## Ресурсы
+## 📚 Бесплатные ресурсы
 
-- 📘 [Официальный туториал Python (RU)](https://docs.python.org/3/tutorial/index.html)
-- 📘 [pythontutor.ru](https://pythontutor.ru/) — учебник + задачи
-- 📘 [Real Python — Basics](https://realpython.com/tutorials/basics/)
-- 📘 [Automate the Boring Stuff (free)](https://automatetheboringstuff.com/)
-- 🎮 [CheckiO](https://checkio.org/), [Exercism](https://exercism.org/tracks/python)
-- 🎥 [Corey Schafer — Python Tutorial](https://www.youtube.com/playlist?list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU)
-- 🎥 [selfedu — Python 3 (RU)](https://www.youtube.com/@selfedu_rus)
-- 💬 [t.me/pythonl](https://t.me/pythonl)
+### 🚀 Главные Telegram-источники (подпишись первым делом)
+
+1. 🤖 **[t.me/ai_machinelearning_big_data](https://t.me/ai_machinelearning_big_data)** — практика и примеры кода по Python, AI/ML, Big Data. Свежие модели, ноутбуки, разборы статей. Полезен с самых первых шагов: видишь, *куда* приведёт язык.
+2. 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, рубрика «задача дня», вакансии. Идеально для ежедневной прокачки на этапе основ.
+3. 📚 **[Папка Python-каналов →](https://t.me/addlist/8vDUwYRGujRmZjFi)** — кураторская подборка лучших каналов по Python, ML, DS, AI и инфраструктуре. Один клик — и у тебя готовая лента качественных источников на весь курс.
+
+### 📘 Учебники и туториалы
+
+- [Официальный туториал Python (RU)](https://docs.python.org/3/tutorial/index.html) — первоисточник, читать обязательно
+- [pythontutor.ru](https://pythontutor.ru/) — учебник + задачи с визуализацией выполнения
+- [Real Python — Basics](https://realpython.com/tutorials/basics/) — короткие практические статьи
+- [Automate the Boring Stuff (free)](https://automatetheboringstuff.com/) — классика для быстрого старта
+
+### 🎮 Тренажёры и задачи
+
+- [CheckiO](https://checkio.org/) — игровые задачи на Python
+- [Exercism — Python track](https://exercism.org/tracks/python) — задачи с менторской обратной связью
+- [edabit](https://edabit.com/challenges/python3) — короткие задачи на 5–15 минут
+
+### 🎥 Видео-курсы
+
+- [Corey Schafer — Python Tutorial](https://www.youtube.com/playlist?list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU) (EN)
+- [selfedu — Python 3 (RU)](https://www.youtube.com/@selfedu_rus) — системный курс на русском
+- [mCoding](https://www.youtube.com/@mCoding) (EN) — короткие ролики про идиомы и подводные камни
+
+### 📖 Шпаргалки
+
+- [Python Cheatsheet (gto76)](https://github.com/gto76/python-cheatsheet) — самый полный one-page reference
+- [PEP 8 (RU)](https://pep8.ru/doc/pep8/) — стиль кода
 
 ---
 
