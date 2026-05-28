@@ -46,9 +46,11 @@
 | 16 | 🤖 Machine Learning (PyTorch / sklearn / HF) | [stage-16-ml.md](stage-16-ml.md) |
 | 17 | 🧠 LLM-приложения (RAG / агенты / LangGraph / MCP / vLLM) | [stage-17-llm-apps.md](stage-17-llm-apps.md) |
 | 🌊 | **Курс по асинхронности** (asyncio 2026, TaskGroup, anyio, uvloop, PEP 703) | [async-course.md](async-course.md) |
+| 🐳 | **Курс по контейнерам** (Docker, BuildKit, distroless, k8s, Helm, security) | [containers-course.md](containers-course.md) |
 | 📦 | Starter-шаблон ML-проекта | [templates/ml-starter](../templates/ml-starter/) |
 | 📦 | Starter-шаблон скрапера | [templates/scraper-starter](../templates/scraper-starter/) |
 | 📦 | Starter-шаблон async-сервиса | [templates/async-starter](../templates/async-starter/) |
+| 📦 | Starter-шаблон docker/k8s | [templates/docker-starter](../templates/docker-starter/) |
 | 📝 | Библиотека готовых промптов | [prompts/README.md](prompts/README.md) |
 
 ## 📐 Структура каждого этапа
