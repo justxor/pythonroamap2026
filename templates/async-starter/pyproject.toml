@@ -1,0 +1,52 @@
+[project]
+name = "async-starter"
+version = "0.1.0"
+description = "Async Python service starter (FastAPI + asyncpg + httpx + uvloop)"
+requires-python = ">=3.13"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "uvloop>=0.21; platform_system != 'Windows'",
+  "httpx[http2]>=0.27",
+  "asyncpg>=0.30",
+  "sqlalchemy[asyncio]>=2.0",
+  "anyio>=4.6",
+  "pydantic>=2.10",
+  "pydantic-settings>=2.6",
+  "structlog>=24.4",
+  "orjson>=3.10",
+  "opentelemetry-instrumentation-fastapi>=0.50b0",
+  "opentelemetry-instrumentation-asyncpg>=0.50b0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-anyio>=0.0.0",
+  "anyio[trio]>=4.6",
+  "httpx>=0.27",
+  "ruff>=0.7",
+  "pyright>=1.1.380",
+  "hypothesis>=6.115",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "ASYNC", "S", "SIM", "RUF"]
+ignore = ["S101"]
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
