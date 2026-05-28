@@ -1,0 +1,54 @@
+# docker-starter — local dev compose
+services:
+  api:
+    build:
+      context: .
+      cache_from:
+        - type=registry,ref=ghcr.io/me/app:cache
+    image: docker-starter-api:dev
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    ports:
+      - "6379:6379"
+
+  jaeger:
+    profiles: [observability]
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"   # UI
+      - "4317:4317"     # OTLP gRPC
+
+volumes:
+  pgdata:
