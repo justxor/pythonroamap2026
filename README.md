@@ -18,6 +18,7 @@
 > - [🕸 Парсинг и веб-скрапинг 2026](course/stage-15-parsing.md) — httpx, selectolax, Playwright, Scrapy, crawl4ai, антибот, этика.
 > - [🤖 Machine Learning на Python (2026)](course/stage-16-ml.md) — sklearn, LightGBM/CatBoost, PyTorch + Lightning, HuggingFace, Optuna, MLflow, BentoML, drift-мониторинг.
 > - [🧠 LLM-приложения (2026)](course/stage-17-llm-apps.md) — RAG, агенты, LangGraph, MCP, vLLM, eval, guardrails.
+> - [🌊 **Курс по асинхронности 2026**](course/async-course.md) — asyncio, TaskGroup, anyio, uvloop, free-threaded Python (PEP 703), production-чеклист.
 
 📣 **Главные Telegram-источники этого роадмапа:**
 > - 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, вакансии.
