@@ -19,6 +19,7 @@
 > - [🤖 Machine Learning на Python (2026)](course/stage-16-ml.md) — sklearn, LightGBM/CatBoost, PyTorch + Lightning, HuggingFace, Optuna, MLflow, BentoML, drift-мониторинг.
 > - [🧠 LLM-приложения (2026)](course/stage-17-llm-apps.md) — RAG, агенты, LangGraph, MCP, vLLM, eval, guardrails.
 > - [🌊 **Курс по асинхронности 2026**](course/async-course.md) — asyncio, TaskGroup, anyio, uvloop, free-threaded Python (PEP 703), production-чеклист.
+> - [🐳 **Курс по контейнерам 2026**](course/containers-course.md) — Docker, BuildKit, multi-stage, distroless, chainguard, Kubernetes, Helm, supply-chain security (trivy/cosign/SBOM).
 
 📣 **Главные Telegram-источники этого роадмапа:**
 > - 🐍 **[t.me/pythonl](https://t.me/pythonl)** — главный канал по Python: новости, библиотеки, разборы, вакансии.
