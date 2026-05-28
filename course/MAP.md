@@ -60,6 +60,11 @@ flowchart TD
 
 Цель: ML / data / AI engineer. Стек: Polars, DuckDB, Parquet, sklearn, PyTorch + Lightning, HuggingFace, MLflow, BentoML, LangGraph, RAG, MCP, vLLM.
 
+### 🌊 High-load Async
+`Stage 6 (Async) → [Курс по асинхронности](async-course.md) → Stage 9 (Web) → Stage 10 (DB) → [async-starter](../templates/async-starter/)`
+
+Цель: высоконагруженные сервисы на FastAPI/asyncpg/uvloop. Стек: asyncio.TaskGroup, anyio, structured concurrency, free-threaded Python (PEP 703), graceful shutdown.
+
 ### 🕷 Scraping & интеграции
 `Stage 8 → 15 Parsing → 15 Antibot`
 
