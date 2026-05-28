@@ -1,0 +1,14 @@
+apiVersion: v2
+name: docker-starter-app
+description: Helm chart for docker-starter demo Python service
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.28.0"
+maintainers:
+  - name: docker-starter
+keywords:
+  - python
+  - fastapi
+  - docker
+  - kubernetes
