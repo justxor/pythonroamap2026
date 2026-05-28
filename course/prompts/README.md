@@ -34,6 +34,9 @@
 | [15-ml-baseline.md](15-ml-baseline.md) | ML-baseline за 5 минут (polars + LightGBM + MLflow) |
 | [16-feature-ideas.md](16-feature-ideas.md) | Брейншторм 20 идей фичей с риском утечки |
 | [17-explain-shap.md](17-explain-shap.md) | Интерпретация SHAP-результатов для бизнеса |
+| [18-async-refactor.md](18-async-refactor.md) | Перевод sync-кода в async: blocking calls → TaskGroup + timeout |
+| [19-async-review.md](19-async-review.md) | Async code review по чеклисту из 12 пунктов |
+| [20-async-bench.md](20-async-bench.md) | Бенчмарк asyncio vs uvloop vs nogil-threads vs processes |
 
 ---
 
