@@ -37,6 +37,9 @@
 | [18-async-refactor.md](18-async-refactor.md) | Перевод sync-кода в async: blocking calls → TaskGroup + timeout |
 | [19-async-review.md](19-async-review.md) | Async code review по чеклисту из 12 пунктов |
 | [20-async-bench.md](20-async-bench.md) | Бенчмарк asyncio vs uvloop vs nogil-threads vs processes |
+| [21-dockerfile-review.md](21-dockerfile-review.md) | Ревью Dockerfile по 14 пунктам (multi-stage, security, layers) |
+| [22-compose-to-k8s.md](22-compose-to-k8s.md) | Конвертация docker-compose в production k8s/Helm |
+| [23-image-slim.md](23-image-slim.md) | Радикальное сокращение Docker-образа (1+ГБ → ~120МБ) |
 
 ---
 
