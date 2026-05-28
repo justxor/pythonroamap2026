@@ -65,6 +65,11 @@ flowchart TD
 
 Цель: высоконагруженные сервисы на FastAPI/asyncpg/uvloop. Стек: asyncio.TaskGroup, anyio, structured concurrency, free-threaded Python (PEP 703), graceful shutdown.
 
+### 🐳 Containers & Platform
+`Stage 12 (DevOps) → [Курс по контейнерам](containers-course.md) → [docker-starter](../templates/docker-starter/) → Stage 13 (Architecture)`
+
+Цель: платформенный/SRE-инженер. Стек: Docker BuildKit, distroless/chainguard, multi-arch, Kubernetes, Helm, ArgoCD, trivy + cosign + SBOM, OPA Gatekeeper.
+
 ### 🕷 Scraping & интеграции
 `Stage 8 → 15 Parsing → 15 Antibot`
 
