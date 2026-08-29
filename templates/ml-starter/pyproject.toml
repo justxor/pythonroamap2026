@@ -26,6 +26,7 @@ dependencies = [
     "skl2onnx>=1.17",
     # monitoring
     "evidently>=0.4",
+    "packaging>=24",
     # infra
     "pydantic-settings>=2.6",
     "hydra-core>=1.3",

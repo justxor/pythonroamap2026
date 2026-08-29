@@ -3,8 +3,16 @@ from pathlib import Path
 
 import polars as pl
 import typer
-from evidently.metric_preset import DataDriftPreset
-from evidently.report import Report
+
+import evidently
+from packaging.version import Version
+
+if Version(evidently.__version__) >= Version("0.7.0"):
+    from evidently.legacy.metric_preset import DataDriftPreset
+    from evidently.legacy.report import Report
+else:
+    from evidently.metric_preset import DataDriftPreset
+    from evidently.report import Report
 
 from ml_starter.config import settings
 
